@@ -71,7 +71,7 @@ https://pr-42-sciam-preview.surge.sh
 |----------------|--------------------|
 | Surge subdomain prefix | Replace `sciam-preview` in the `SURGE_DOMAIN` env var |
 | Build command | Replace `bundle exec jekyll build` in the **Build** step |
-| Publish directory | Replace `_site` in the **Deploy** step and `SURGE_DOMAIN` env var |
+| Publish directory | Replace `_site` in the **Deploy** step with your build output directory |
 | Trigger phrase | Replace `/preview` in the `if:` condition on the job |
 
 ## Adapting for non-Jekyll sites
@@ -95,7 +95,7 @@ Replace the **Install dependencies** and **Build** steps with the commands for y
 
 ## Security considerations
 
-- The workflow uses `pull_request_target`-equivalent permissions carefully: it only reads repository contents and posts comments. It does not expose secrets to untrusted code from the PR branch.
+- The workflow uses the `issue_comment` trigger which safely checks out PR code after validation, only reading repository contents and posting comments without exposing secrets to untrusted code.
 - `SURGE_TOKEN` is passed via `env:` and never echoed in logs.
 - Concurrency is scoped per-PR to prevent overlapping deployments.
 
