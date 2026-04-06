@@ -13,10 +13,10 @@ Give reviewers a live preview URL for every pull request with a single comment. 
 3. Resolves the PR number and validates it is numeric.
 4. Posts an "in progress" comment immediately so reviewers know a deployment has started.
 5. Checks out the PR merge ref (`refs/pull/{number}/merge`).
-6. Installs Ruby 3.1, Node.js 20, and Graphviz.
-7. Builds a Jekyll site (`bundle exec jekyll build`) with `JEKYLL_ENV: production`.
+6. Installs the dependencies required by the project's build toolchain (e.g. Ruby + Graphviz for Jekyll, Java + Maven for Quarkus Roq, Node.js for Vite/Next.js).
+7. Builds the static site using the appropriate command for the stack.
 8. Validates that `SURGE_TOKEN` is configured; fails with a clear message if it is not.
-9. Deploys `_site/` to `https://pr-{number}-sciam-preview.surge.sh`.
+9. Deploys the build output to `https://pr-{number}-sciam-preview.surge.sh`.
 10. Updates the "in progress" comment with the deployed URL on success, or with a link to the failed run on failure.
 
 ## Trigger
