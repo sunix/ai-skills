@@ -12,15 +12,27 @@ Post this comment on any open pull request:
 /preview
 ```
 
-The workflow will pick it up, build the site from the PR branch, deploy it to Surge, and reply with the URL.
+The workflow will pick it up, immediately post a "build in progress" comment, build the site from the PR merge ref, deploy it to Surge, and update the comment with the URL.
+
+---
+
+## Sample "in progress" comment
+
+As soon as the workflow starts, it posts:
+
+> ⏳ **Preview build in progress...**
+>
+> 🔗 [View workflow run](https://github.com/your-org/your-repo/actions/runs/12345678)
 
 ---
 
 ## Sample success comment
 
-After a successful deployment, the workflow posts:
+After a successful deployment, the workflow updates the comment to:
 
-> 🚀 Preview deployed to **https://pr-42-sciam-preview.surge.sh**
+> 🚀 **Preview deployed successfully!**
+>
+> 🌐 Preview: [https://pr-42-sciam-preview.surge.sh](https://pr-42-sciam-preview.surge.sh)
 
 The URL is deterministic: `pr-{PR_NUMBER}-sciam-preview.surge.sh`. Posting `/preview` again on the same PR overwrites the previous deployment.
 
@@ -28,20 +40,28 @@ The URL is deterministic: `pr-{PR_NUMBER}-sciam-preview.surge.sh`. Posting `/pre
 
 ## Sample failure comment — missing SURGE_TOKEN
 
-If `SURGE_TOKEN` is not configured, the workflow fails at the validation step and posts:
+If `SURGE_TOKEN` is not configured, the workflow fails at the validation step and updates the comment to:
 
-> ❌ Preview deployment failed. Check the [workflow run](https://github.com/your-org/your-repo/actions/runs/12345678) for details.
+> ❌ **Preview build failed.**
+>
+> 🔗 [View workflow run](https://github.com/your-org/your-repo/actions/runs/12345678)
 
 The workflow run log will contain:
 
 ```
-::error::SURGE_TOKEN secret is not configured.
-::error::To fix this:
-::error::  1. Install Surge: npm install -g surge
-::error::  2. Log in:        surge login
-::error::  3. Get a token:   surge token
-::error::  4. Add it to:     Repository Settings > Secrets and variables > Actions > New repository secret
-::error::     Name: SURGE_TOKEN
+❌ ERROR: SURGE_TOKEN is not set!
+
+SURGE_TOKEN is mandatory to deploy to surge.sh with an account.
+
+To generate a token:
+  1. Install surge: npm install -g surge
+  2. Login: surge login
+  3. Generate token: surge token
+
+Then add the token as a secret in GitHub Actions settings:
+  Repository Settings > Secrets and variables > Actions > New repository secret
+  Name: SURGE_TOKEN
+  Value: <your token from 'surge token' command>
 ```
 
 ---
@@ -78,4 +98,4 @@ Replace the **Build Jekyll site** step in the template with the build command fo
 # Change the deploy step: surge ./_site → surge ./dist
 ```
 
-Also update the `SURGE_DOMAIN` variable and remove the Ruby/Graphviz setup steps if they are not needed by your stack.
+Also update the `DEPLOY_DOMAIN` variable and remove the Ruby/Graphviz setup steps if they are not needed by your stack.
