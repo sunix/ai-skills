@@ -1,0 +1,98 @@
+name: Deploy to Surge
+
+# Deploy the static site to Surge on every push to the main branch.
+on:
+  push:
+    branches:
+      - main
+
+# Minimal permissions — this workflow only reads the repository content.
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out the repository at the pushed commit.
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── Build dependencies ──────────────────────────────────────────────────
+      # Remove or replace the steps below to match your project's build toolchain.
+      # This template uses Jekyll (Ruby + Graphviz + Node.js).
+
+      - name: Install Graphviz
+        run: sudo apt-get install -y graphviz
+
+      - name: Set up Ruby 3.1
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.1"
+          bundler-cache: true
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      # ── Install Surge CLI ───────────────────────────────────────────────────
+      - name: Install Surge CLI
+        run: npm install -g surge
+
+      # ── Build ───────────────────────────────────────────────────────────────
+      # Replace this step with the build command for your stack:
+      #   Hugo  → hugo               (publish dir: public)
+      #   Vite  → npm ci && npm run build  (publish dir: dist)
+      #   Next  → npm ci && npm run build  (publish dir: out)
+      - name: Build Jekyll site
+        run: bundle exec jekyll build
+        env:
+          JEKYLL_ENV: production
+
+      # ── Validate required secrets ───────────────────────────────────────────
+      # Fail early with a helpful message if either secret is not configured.
+      - name: Check SURGE_TOKEN and SURGE_DOMAIN
+        env:
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+          SURGE_DOMAIN: ${{ secrets.SURGE_DOMAIN }}
+        run: |
+          MISSING=()
+          if [ -z "$SURGE_TOKEN" ]; then
+            MISSING+=("SURGE_TOKEN")
+          fi
+          if [ -z "$SURGE_DOMAIN" ]; then
+            MISSING+=("SURGE_DOMAIN")
+          fi
+
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "❌ ERROR: The following required secret(s) are not set: ${MISSING[*]}"
+            echo ""
+            echo "SURGE_TOKEN — authentication token for the Surge account."
+            echo "  To generate a token:"
+            echo "    1. Install surge: npm install -g surge"
+            echo "    2. Login: surge login"
+            echo "    3. Generate token: surge token"
+            echo ""
+            echo "SURGE_DOMAIN — the Surge domain to deploy to (e.g. my-project.surge.sh)."
+            echo ""
+            echo "Add both as repository secrets:"
+            echo "  Repository Settings > Secrets and variables > Actions > New repository secret"
+            exit 1
+          fi
+          echo "✓ SURGE_TOKEN is set"
+          echo "✓ SURGE_DOMAIN is set"
+
+      # ── Deploy to Surge ─────────────────────────────────────────────────────
+      # Replace ./_site with your build output directory if using a different stack.
+      - name: Deploy to Surge
+        env:
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+          SURGE_DOMAIN: ${{ secrets.SURGE_DOMAIN }}
+        run: |
+          set -euo pipefail
+          # Replace ./_site with your build output directory (e.g. ./public, ./dist, ./out).
+          surge ./_site --domain "$SURGE_DOMAIN" --token "$SURGE_TOKEN"
+          echo "✅ Deployed to https://$SURGE_DOMAIN"
