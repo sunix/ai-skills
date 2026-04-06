@@ -1,65 +1,67 @@
-name: PR Preview (Surge)
+name: Preview PR on Surge
 
 on:
   issue_comment:
     types: [created]
 
-# Only one preview deployment per PR at a time.
-# If a new /preview comment is posted while a run is in progress, cancel the older run.
-concurrency:
-  group: pr-preview-${{ github.event.issue.number }}
-  cancel-in-progress: true
-
 permissions:
   contents: read
   pull-requests: write
 
+# Only one preview deployment per PR at a time.
+# If a new /preview comment is posted while a run is in progress, cancel the older run.
+concurrency:
+  group: preview-${{ github.event.issue.number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   preview:
-    # Only run when the comment is exactly "/preview" and belongs to a pull request.
-    if: >
-      github.event.issue.pull_request != null &&
-      github.event.comment.body == '/preview'
-
     runs-on: ubuntu-latest
-
-    env:
-      PR_NUMBER: ${{ github.event.issue.number }}
+    # Run only if it's a /preview comment on a pull request (not an issue).
+    if: >
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '/preview')
 
     steps:
-      # ── Validate ──────────────────────────────────────────────────────────────
-      # Fail early if SURGE_TOKEN is not configured so the error message is clear.
-      - name: Validate SURGE_TOKEN
-        env:
-          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+      # ── Resolve PR number ─────────────────────────────────────────────────────
+      - name: Resolve PR number
+        shell: bash
         run: |
-          if [ -z "$SURGE_TOKEN" ]; then
-            echo "::error::SURGE_TOKEN secret is not configured."
-            echo "::error::To fix this:"
-            echo "::error::  1. Install Surge: npm install -g surge"
-            echo "::error::  2. Log in:        surge login"
-            echo "::error::  3. Get a token:   surge token"
-            echo "::error::  4. Add it to:     Repository Settings > Secrets and variables > Actions > New repository secret"
-            echo "::error::     Name: SURGE_TOKEN"
+          PR_NUM="${{ github.event.issue.number }}"
+          # Validate PR number is numeric
+          if ! [[ "$PR_NUM" =~ ^[0-9]+$ ]]; then
+            echo "Error: Invalid PR number: $PR_NUM"
             exit 1
           fi
+          echo "PR_NUMBER=$PR_NUM" >> $GITHUB_ENV
+          echo "Resolved PR_NUMBER=$PR_NUM"
 
-      # ── Resolve PR context ────────────────────────────────────────────────────
-      # Read the HEAD SHA of the pull request so we check out the correct commit.
-      - name: Resolve PR HEAD SHA
-        id: pr
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          sha=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json headRefOid -q '.headRefOid')
-          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      # ── Post "build in progress" comment ──────────────────────────────────────
+      # Creates a comment immediately so reviewers know a deployment has started.
+      # The comment ID is captured so it can be updated on success or failure.
+      - name: Comment PR with preview starting
+        id: start_comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = Number(process.env.PR_NUMBER);
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            const body = `⏳ **Preview build in progress...**\n\n🔗 [View workflow run](${runUrl})`;
+            const { data: comment } = await github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
+            core.setOutput('comment_id', comment.id);
 
       # ── Checkout ──────────────────────────────────────────────────────────────
-      # Check out the PR branch at its exact HEAD commit.
-      - name: Checkout PR branch
+      # Check out the PR merge commit (PR branch merged with the base branch).
+      - name: Checkout PR (merge ref)
         uses: actions/checkout@v4
         with:
-          ref: ${{ steps.pr.outputs.sha }}
+          ref: refs/pull/${{ env.PR_NUMBER }}/merge
 
       # ── Setup ─────────────────────────────────────────────────────────────────
       - name: Install Graphviz
@@ -77,38 +79,85 @@ jobs:
           node-version: "20"
           cache: "npm"
 
+      - name: Install Surge CLI
+        run: npm install -g surge
+
       # ── Build ─────────────────────────────────────────────────────────────────
       # Replace this step with the build command for your stack (Hugo, Next.js, Vite, etc.).
       - name: Build Jekyll site
         run: bundle exec jekyll build
+        env:
+          JEKYLL_ENV: production
 
-      # ── Deploy ────────────────────────────────────────────────────────────────
-      - name: Install Surge CLI
-        run: npm install -g surge
-
-      - name: Deploy to Surge
-        id: deploy
+      # ── Validate ──────────────────────────────────────────────────────────────
+      # Check SURGE_TOKEN after checkout so the workspace is available for diagnostics.
+      - name: Check SURGE_TOKEN
         env:
           SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+        run: |
+          if [ -z "$SURGE_TOKEN" ]; then
+            echo "❌ ERROR: SURGE_TOKEN is not set!"
+            echo ""
+            echo "SURGE_TOKEN is mandatory to deploy to surge.sh with an account."
+            echo ""
+            echo "To generate a token:"
+            echo "  1. Install surge: npm install -g surge"
+            echo "  2. Login: surge login"
+            echo "  3. Generate token: surge token"
+            echo ""
+            echo "Then add the token as a secret in GitHub Actions settings:"
+            echo "  Repository Settings > Secrets and variables > Actions > New repository secret"
+            echo "  Name: SURGE_TOKEN"
+            echo "  Value: <your token from 'surge token' command>"
+            echo ""
+            exit 1
+          fi
+          echo "✓ SURGE_TOKEN is set"
+
+      # ── Deploy ────────────────────────────────────────────────────────────────
+      - name: Deploy to Surge
+        env:
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+        run: |
+          set -euo pipefail
           # Change "sciam-preview" to your own subdomain prefix.
-          SURGE_DOMAIN: pr-${{ env.PR_NUMBER }}-sciam-preview.surge.sh
-        run: surge ./_site "$SURGE_DOMAIN"
+          export DEPLOY_DOMAIN="pr-${{ env.PR_NUMBER }}-sciam-preview.surge.sh"
+          surge ./_site --domain "$DEPLOY_DOMAIN" --token "$SURGE_TOKEN"
+          echo "DEPLOY_URL=https://$DEPLOY_DOMAIN" >> $GITHUB_ENV
 
       # ── PR Feedback ───────────────────────────────────────────────────────────
-      - name: Post success comment
+      # Update the "in progress" comment with the result instead of creating a new one.
+      - name: Update PR comment with preview link
         if: success()
+        uses: actions/github-script@v7
         env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh pr comment "$PR_NUMBER" \
-            --repo "$GITHUB_REPOSITORY" \
-            --body "🚀 Preview deployed to **https://pr-${PR_NUMBER}-sciam-preview.surge.sh**"
+          COMMENT_ID: ${{ steps.start_comment.outputs.comment_id }}
+          PREVIEW_URL: ${{ env.DEPLOY_URL }}
+        with:
+          script: |
+            const commentId = Number(process.env.COMMENT_ID);
+            const previewUrl = process.env.PREVIEW_URL || 'unavailable';
+            const body = `🚀 **Preview deployed successfully!**\n\n🌐 Preview: [${previewUrl}](${previewUrl})`;
+            await github.rest.issues.updateComment({
+              comment_id: commentId,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
 
-      - name: Post failure comment
-        if: failure()
+      - name: Update PR comment on failure
+        if: failure() && steps.start_comment.outputs.comment_id
+        uses: actions/github-script@v7
         env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh pr comment "$PR_NUMBER" \
-            --repo "$GITHUB_REPOSITORY" \
-            --body "❌ Preview deployment failed. Check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details."
+          COMMENT_ID: ${{ steps.start_comment.outputs.comment_id }}
+        with:
+          script: |
+            const commentId = Number(process.env.COMMENT_ID);
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            const body = `❌ **Preview build failed.**\n\n🔗 [View workflow run](${runUrl})`;
+            await github.rest.issues.updateComment({
+              comment_id: commentId,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });

@@ -4,19 +4,20 @@ Deploy a static site PR preview to [Surge](https://surge.sh) when a `/preview` c
 
 ## Purpose
 
-Give reviewers a live preview URL for every pull request with a single comment. The workflow builds the site from the PR branch and publishes it to a deterministic Surge URL.
+Give reviewers a live preview URL for every pull request with a single comment. The workflow builds the site from the PR merge ref and publishes it to a deterministic Surge URL.
 
 ## What it does
 
 1. Listens for `issue_comment` events on pull requests.
-2. Ignores comments that are not exactly `/preview`.
-3. Validates that `SURGE_TOKEN` is configured; fails with a clear message if it is not.
-4. Resolves the PR number and checks out the PR HEAD commit.
-5. Installs Ruby 3.1, Node.js 20, and Graphviz.
-6. Builds a Jekyll site (`bundle exec jekyll build`).
-7. Deploys `_site/` to `https://pr-{number}-sciam-preview.surge.sh`.
-8. Posts a success comment with the deployed URL.
-9. Posts a failure comment if any step fails.
+2. Runs when the comment body contains `/preview`.
+3. Resolves the PR number and validates it is numeric.
+4. Posts an "in progress" comment immediately so reviewers know a deployment has started.
+5. Checks out the PR merge ref (`refs/pull/{number}/merge`).
+6. Installs the dependencies required by the project's build toolchain (e.g. Ruby + Graphviz for Jekyll, Java + Maven for Quarkus Roq, Node.js for Vite/Next.js).
+7. Builds the static site using the appropriate command for the stack.
+8. Validates that `SURGE_TOKEN` is configured; fails with a clear message if it is not.
+9. Deploys the build output to `https://pr-{number}-sciam-preview.surge.sh`.
+10. Updates the "in progress" comment with the deployed URL on success, or with a link to the failed run on failure.
 
 ## Trigger
 
@@ -24,7 +25,7 @@ Give reviewers a live preview URL for every pull request with a single comment. 
 /preview
 ```
 
-Post this as a comment on any open pull request. The workflow ignores comments that do not match exactly.
+Post this as a comment on any open pull request. The workflow runs whenever the comment body contains `/preview`.
 
 ## Required secret
 
@@ -32,7 +33,7 @@ Post this as a comment on any open pull request. The workflow ignores comments t
 |--------|-------------|
 | `SURGE_TOKEN` | Authentication token for the Surge account used for deployments |
 
-The workflow fails immediately with a diagnostic message if this secret is missing or empty.
+The workflow fails with a diagnostic message if this secret is missing or empty.
 
 ## How to generate SURGE_TOKEN
 
@@ -69,10 +70,10 @@ https://pr-42-sciam-preview.surge.sh
 
 | What to change | Where to change it |
 |----------------|--------------------|
-| Surge subdomain prefix | Replace `sciam-preview` in the `SURGE_DOMAIN` env var |
+| Surge subdomain prefix | Replace `sciam-preview` in the `DEPLOY_DOMAIN` variable inside the **Deploy to Surge** step |
 | Build command | Replace `bundle exec jekyll build` in the **Build** step |
 | Publish directory | Replace `_site` in the **Deploy** step with your build output directory |
-| Trigger phrase | Replace `/preview` in the `if:` condition on the job |
+| Trigger phrase | Replace `/preview` in the `contains(...)` condition on the job |
 
 ## Adapting for non-Jekyll sites
 
@@ -95,7 +96,7 @@ Replace the **Install dependencies** and **Build** steps with the commands for y
 
 ## Security considerations
 
-- The workflow uses the `issue_comment` trigger which safely checks out PR code after validation, only reading repository contents and posting comments without exposing secrets to untrusted code.
+- The workflow uses the `issue_comment` trigger and checks out the PR merge ref, which represents the PR branch already merged with the base branch.
 - `SURGE_TOKEN` is passed via `env:` and never echoed in logs.
 - Concurrency is scoped per-PR to prevent overlapping deployments.
 
