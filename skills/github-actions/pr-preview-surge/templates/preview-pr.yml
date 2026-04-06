@@ -1,0 +1,114 @@
+name: PR Preview (Surge)
+
+on:
+  issue_comment:
+    types: [created]
+
+# Only one preview deployment per PR at a time.
+# If a new /preview comment is posted while a run is in progress, cancel the older run.
+concurrency:
+  group: pr-preview-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  preview:
+    # Only run when the comment is exactly "/preview" and belongs to a pull request.
+    if: >
+      github.event.issue.pull_request != null &&
+      github.event.comment.body == '/preview'
+
+    runs-on: ubuntu-latest
+
+    env:
+      PR_NUMBER: ${{ github.event.issue.number }}
+
+    steps:
+      # ── Validate ──────────────────────────────────────────────────────────────
+      # Fail early if SURGE_TOKEN is not configured so the error message is clear.
+      - name: Validate SURGE_TOKEN
+        env:
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+        run: |
+          if [ -z "$SURGE_TOKEN" ]; then
+            echo "::error::SURGE_TOKEN secret is not configured."
+            echo "::error::To fix this:"
+            echo "::error::  1. Install Surge: npm install -g surge"
+            echo "::error::  2. Log in:        surge login"
+            echo "::error::  3. Get a token:   surge token"
+            echo "::error::  4. Add it to:     Repository Settings > Secrets and variables > Actions > New repository secret"
+            echo "::error::     Name: SURGE_TOKEN"
+            exit 1
+          fi
+
+      # ── Resolve PR context ────────────────────────────────────────────────────
+      # Read the HEAD SHA of the pull request so we check out the correct commit.
+      - name: Resolve PR HEAD SHA
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json headRefOid -q '.headRefOid')
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      # ── Checkout ──────────────────────────────────────────────────────────────
+      # Check out the PR branch at its exact HEAD commit.
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.sha }}
+
+      # ── Setup ─────────────────────────────────────────────────────────────────
+      - name: Install Graphviz
+        run: sudo apt-get install -y graphviz
+
+      - name: Set up Ruby 3.1
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.1"
+          bundler-cache: true   # runs `bundle install` and caches gems
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      # ── Build ─────────────────────────────────────────────────────────────────
+      # Replace this step with the build command for your stack (Hugo, Next.js, Vite, etc.).
+      - name: Build Jekyll site
+        run: bundle exec jekyll build
+
+      # ── Deploy ────────────────────────────────────────────────────────────────
+      - name: Install Surge CLI
+        run: npm install -g surge
+
+      - name: Deploy to Surge
+        id: deploy
+        env:
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+          # Change "sciam-preview" to your own subdomain prefix.
+          SURGE_DOMAIN: pr-${{ env.PR_NUMBER }}-sciam-preview.surge.sh
+        run: surge ./_site "$SURGE_DOMAIN"
+
+      # ── PR Feedback ───────────────────────────────────────────────────────────
+      - name: Post success comment
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "$PR_NUMBER" \
+            --repo "$GITHUB_REPOSITORY" \
+            --body "🚀 Preview deployed to **https://pr-${PR_NUMBER}-sciam-preview.surge.sh**"
+
+      - name: Post failure comment
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "$PR_NUMBER" \
+            --repo "$GITHUB_REPOSITORY" \
+            --body "❌ Preview deployment failed. Check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details."
