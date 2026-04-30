@@ -1,0 +1,43 @@
+<!-- GitHub Star Button -->
+<!-- Drop this snippet anywhere in your HTML to show a star button with live star count. -->
+<!-- Replace OWNER and REPO with your GitHub repository owner and name. -->
+
+<a
+  id="github-star-link"
+  href="https://github.com/OWNER/REPO"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Star on GitHub"
+>
+  ⭐ Star <span id="github-star-count" aria-live="polite"></span>
+</a>
+
+<script>
+  // Fetch the star count from the GitHub API and update the button.
+  // Replace OWNER and REPO with your GitHub repository owner and name.
+  (function () {
+    var OWNER = "OWNER";
+    var REPO = "REPO";
+
+    fetch("https://api.github.com/repos/" + encodeURIComponent(OWNER) + "/" + encodeURIComponent(REPO))
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("GitHub API error: " + response.status);
+        }
+        return response.json();
+      })
+      .then(function (data) {
+        var count = data.stargazers_count;
+        var el = document.getElementById("github-star-count");
+        // Only update the element if it exists and the API returned a number.
+        if (el && typeof count === "number") {
+          el.textContent = "(" + count + ")";
+        }
+      })
+      .catch(function (err) {
+        // Star count is optional — fail silently so the link still works.
+        // Log to the console to aid debugging during development.
+        console.error("github-star-button: failed to fetch star count", err);
+      });
+  })();
+</script>
