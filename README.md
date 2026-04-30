@@ -24,17 +24,20 @@ This repository serves as a shared reference for AI agents and human developers.
 
 ## Available skills
 
-This repository starts with one reference skill:
+### GitHub Actions
 
-- [`pr-preview-surge`](skills/github-actions/pr-preview-surge/README.md) — Deploy a static site PR preview to Surge on `/preview` comment
+| Skill | Description |
+|-------|-------------|
+| [`pr-preview-surge`](skills/github-actions/pr-preview-surge/README.md) | Deploy a static site PR preview to Surge when a `/preview` comment is posted on a pull request |
+| [`push-to-surge`](skills/github-actions/push-to-surge/README.md) | Deploy a static site to Surge automatically on every push to the `main` branch |
 
-More skills will be added over time, covering areas such as:
+### Webapp
 
-- CI/CD pipelines
-- Deployment automation
-- Testing and linting workflows
-- Release automation
-- Project bootstrapping
+| Skill | Description |
+|-------|-------------|
+| [`github-star-button`](skills/webapp/github-star-button/README.md) | Display the live GitHub star count for a repository and link to it directly from a web page |
+
+For the full index, see [`skills/index.md`](skills/index.md).
 
 ## Contributing
 
