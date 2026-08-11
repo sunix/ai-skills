@@ -56,6 +56,28 @@ jobs:
             });
             core.setOutput('comment_id', comment.id);
 
+      # ── Validate mergeability ─────────────────────────────────────────────────
+      # Prevent stale previews by ensuring the PR is mergeable before building.
+      # Fails fast if the PR has conflicts or if GitHub hasn't yet computed mergeability.
+      - name: Validate PR mergeability
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = Number(process.env.PR_NUMBER);
+            const { data: pull } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+            const state = String(pull.mergeable_state || '').toLowerCase();
+
+            if (state === 'unknown' || pull.mergeable === null) {
+              throw new Error('Mergeability not ready; rerun /preview shortly.');
+            }
+            if (state === 'dirty' || pull.mergeable === false) {
+              throw new Error('PR has conflicts with base; update/rebase before /preview.');
+            }
+
       # ── Checkout ──────────────────────────────────────────────────────────────
       # Check out the PR merge commit (PR branch merged with the base branch).
       - name: Checkout PR (merge ref)
