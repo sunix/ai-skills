@@ -8,6 +8,7 @@ A complete list of available skills in this library. Search this file before cre
 |-------|-------------|
 | [pr-preview-surge](github-actions/pr-preview-surge/README.md) | Deploy a static site PR preview to Surge when a `/preview` comment is posted on a pull request |
 | [push-to-surge](github-actions/push-to-surge/README.md) | Deploy a static site to Surge automatically on every push to the `main` branch |
+| [release-please](github-actions/release-please/README.md) | Automate versioning and GitHub Releases using release-please and Conventional Commits |
 
 ## Webapp
 
