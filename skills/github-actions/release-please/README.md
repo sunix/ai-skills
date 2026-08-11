@@ -42,6 +42,15 @@ If `RELEASE_PLEASE_TOKEN` is not set, the workflow falls back to `GITHUB_TOKEN` 
    - Name: `RELEASE_PLEASE_TOKEN`
    - Value: the token you just generated
 
+## Agent file update
+
+When applying this skill, also update the project's agent instruction file (`AGENT.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, or whichever agent file already exists). Add a section that enforces:
+
+- **Conventional Commits** for all commit messages and pull request titles — required so release-please can compute version bumps.
+- **One logical commit per pull request** — squash intermediate commits before opening or updating a PR.
+
+If no agent file exists, create `AGENT.md` at the repository root with this section.
+
 ## Commit message convention
 
 Commits merged to `main` must follow [Conventional Commits](https://www.conventionalcommits.org/):

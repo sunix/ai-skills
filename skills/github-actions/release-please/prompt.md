@@ -22,4 +22,10 @@ Requirements:
 
 Do not add `release-please-config.json` or `.release-please-manifest.json` unless the user explicitly asks for multi-package or custom configuration.
 
+After adding the workflow, update the project's agent instruction file (e.g. `AGENT.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, or whichever agent file already exists in the repository). Add or extend a section that enforces:
+- **Conventional Commits** for all commit messages and pull request titles (format: `<type>[scope]: <description>`, e.g. `feat: add login page`, `fix(auth): correct redirect`). This is required for release-please to compute version bumps correctly.
+- **One logical commit per pull request** — squash intermediate commits before opening or updating a PR.
+
+If no agent file exists in the repository, create `AGENT.md` at the repository root with this section.
+
 Refer to the template at `skills/github-actions/release-please/templates/release-please.yml` for a complete working example.

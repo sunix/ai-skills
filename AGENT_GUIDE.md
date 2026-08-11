@@ -30,14 +30,6 @@ This guide defines how an AI coding agent should use this repository.
 4. Follow the style rules in [`standards/markdown-style.md`](standards/markdown-style.md).
 5. Open a pull request.
 
-## Commit and pull request conventions
-
-- Use **Conventional Commits** for every commit message and pull request title:
-  - Format: `<type>(<optional scope>): <description>` (e.g. `feat: add release-please skill`, `fix(surge): correct token flag`)
-  - Common types: `feat`, `fix`, `chore`, `docs`, `ci`, `refactor`, `test`
-  - Breaking changes: append `!` after the type (e.g. `feat!: rename template file`) or add a `BREAKING CHANGE:` footer
-- **One logical commit per pull request.** Squash intermediate work-in-progress commits before opening or updating a PR so the history stays clean and release-please can compute version bumps correctly.
-
 ## What agents must not do
 
 - Do not skip the skill index lookup before generating a new implementation.
