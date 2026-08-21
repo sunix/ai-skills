@@ -24,6 +24,12 @@ This repository serves as a shared reference for AI agents and human developers.
 
 ## Available skills
 
+### Documentation
+
+| Skill | Description |
+|-------|-------------|
+| [`making-of`](skills/documentation/making-of/README.md) | Maintain a first-person making-of journal recording how a project is built — decisions, dead ends, and reversals — updated at the end of each AI-assisted session |
+
 ### GitHub Actions
 
 | Skill | Description |

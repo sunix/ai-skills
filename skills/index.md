@@ -2,6 +2,12 @@
 
 A complete list of available skills in this library. Search this file before creating a new implementation.
 
+## Documentation
+
+| Skill | Description |
+|-------|-------------|
+| [making-of](documentation/making-of/README.md) | Maintain a first-person making-of journal recording how a project is built — decisions, dead ends, and reversals — updated at the end of each AI-assisted session |
+
 ## GitHub Actions
 
 | Skill | Description |
