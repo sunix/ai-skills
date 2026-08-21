@@ -21,10 +21,12 @@ Maintain a making-of journal for this repository: a first-person, blog-ish accou
 
 - Read the whole file first and match its voice, language, and formatting exactly.
 - Append one or more new `##` sections covering what happened since the last update. Do not pad: if the session produced one decision, write one short section.
-- Each update must cover three things:
-  1. **What was done** — the changes, decisions, and outcomes of the session.
-  2. **The discussions with the LLM** — what the agent proposed, what the author pushed back on or corrected, and how the disagreement resolved. A correction the author made to the agent's first answer is prime content.
-  3. **Proof that generated code works** — see "Show proof, not claims" below. If code was written this session, the update is not complete without its evidence.
+- Each update must cover four things, in this order:
+  1. **The goal, with a concrete example** — open with what the session set out to accomplish, shown concretely (the user story, the input the user writes, the command they run, the result they should get) *before* any how. The reader must know what success looks like before reading how it was reached.
+  2. **What was done** — the changes, decisions, and outcomes of the session.
+  3. **The discussions with the LLM** — what the agent proposed, what the author pushed back on or corrected, and how the disagreement resolved. A correction the author made to the agent's first answer is prime content.
+  4. **Proof that generated code works** — see "Show proof, not claims" below. If code was written this session, the update is not complete without its evidence.
+- When the session generated interesting code, also **walk through it**: quote the load-bearing snippets (trimmed) and explain why they are written that way — the tricky rule they encode, the edge case they guard. The journal is where a reader should understand the code's ideas, not just learn that it exists.
 - Update the `*Last updated:*` date. Change nothing else in the header block.
 - Never rewrite or delete past sections. If a past conclusion turned out wrong, say so in the new section — the reversal is the content.
 
@@ -36,6 +38,8 @@ When a session produced generated code (a fix, a feature), never just state that
 - **Why this test proves it** — one or two sentences connecting the assertion to the bug or requirement: what would have failed before the change, and why passing now means the behavior is correct (not just that the code runs).
 - **The actual output of running it** — the real test-runner output (trimmed), in a fenced code block. A green run that was actually executed, not a description of one. If the test was also run against the pre-fix code to show it failing, include that red output too — it is the strongest proof.
 
+Prefer **oracle-based proofs** over hardcoded expectations: when a reference implementation exists (the real git, the real compiler, the live API), the test should compare against the oracle's answer instead of a fixed expected value — a hardcoded value only asserts that the code does what the code does. Record that choice in the journal entry; the reasoning is content.
+
 If the change cannot be proven by a test (docs, config), show the equivalent evidence: the command run and its real output.
 
 ## Content rules (both modes)
@@ -46,6 +50,7 @@ If the change cannot be proven by a test (docs, config), show the equivalent evi
 - **Record the conversation.** The back-and-forth with the LLM is part of the story: what was asked, what the agent got wrong, what the author corrected. Quote the pivotal exchange when it explains a decision.
 - **Show proof, not claims.** Generated code is only "done" in the journal when the evidence is shown (see the section above).
 - **Be concrete.** Link actual PRs, issues, and files; quote measured numbers; use tables for data. When a claim was verified, say against what.
+- **No meta-narration.** The journal never talks about the writing or updating of the journal itself — no "I updated this making-of", no describing the journal's structure, its update ritual, or the skill that produced it. Sole exception: a repository whose subject *is* the making-of practice (e.g. the repo hosting this skill).
 - **Keep it readable in one sitting.** Sections short, one idea each.
 
 ## Splitting into a post series
