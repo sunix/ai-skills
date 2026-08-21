@@ -20,10 +20,29 @@ most valuable content — keep them. -->
 ## <Next section — one idea per section>
 
 <!-- Be concrete: link the actual PRs/issues, quote the measured numbers, use tables for
-data. Say what the agent proposed vs. what the human corrected. -->
+data. Recount the discussion with the LLM: what it proposed, what I corrected, how it
+resolved. -->
+
+<!-- When the session generated code, show proof it works — the pattern is always the same
+three beats:
+
+The fix only counts once a test pins it down. Here is the one Claude generated:
+
+```<lang>
+<the generated test, trimmed to the relevant assertion>
+```
+
+This proves it because <what would have failed before the change, and why passing now
+means the behavior is correct>. Running it:
+
+```text
+<real test-runner output, trimmed — actually executed, not described>
+```
+-->
 
 <!--
-At the end of each work session: append new ## sections covering what happened, update the
+At the end of each work session: append new ## sections covering (1) what was done,
+(2) the discussions with the LLM, (3) proof that generated code works. Update the
 "Last updated" date, and never rewrite past sections — if a past conclusion turned out
 wrong, say so in a new section.
 

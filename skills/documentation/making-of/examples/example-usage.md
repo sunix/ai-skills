@@ -23,25 +23,48 @@ At the end of a work session:
 Update the making-of.
 ```
 
-The agent appends new sections covering the session and refreshes the date. A typical appended section:
+The agent appends new sections covering the session and refreshes the date. A typical appended section — note the three beats: what was done, the discussion with the LLM, and proof the generated code works:
 
-```markdown
-## Turns out the install script itself needed fixes first
+````markdown
+## The off-by-one in the interpolator, and the test that pins it down
 
-Before a single data point existed, just getting `00-install.sh` to pass
-green surfaced two real issues in the tool itself:
+Today's session was supposed to be about locale bundles. It turned into
+chasing [#42](https://github.com/example/tool/issues/42): messages like
+`{min} must be under {max}` interpolated the last placeholder as `{max`
+— one character short.
 
-- **[#17](https://github.com/example/tool/issues/17)** — the README's
-  install command 404s, because release assets are version-prefixed but the
-  documented command hardcodes an unversioned filename. **Fixed and merged**
-  in [PR #21](https://github.com/example/tool/pull/21).
-- **[#19](https://github.com/example/tool/issues/19)** — a request sent
-  before the init notification is silently dropped. Traced it into the
-  upstream SDK, which has a `TODO` acknowledging the exact gap. A dead end
-  worth recording: not our bug, reported upstream.
+Claude's first diagnosis blamed the regex. I pushed back: the same regex
+works fine on single-placeholder messages, so the bug had to be in how the
+scan resumes after a match. Second pass found it — the loop resumed at
+`end` instead of `end + 1`, eating the closing brace of the *next*
+placeholder. The regex was innocent.
+
+The fix only counts once a test pins it down. Here is the one Claude
+generated:
+
+```java
+@Test
+void interpolatesConsecutivePlaceholders() {
+    var result = interpolator.interpolate("{min} must be under {max}",
+            Map.of("min", "1", "max", "10"));
+    assertEquals("1 must be under 10", result);
+}
 ```
 
-Note the pattern: first person, concrete links, a dead end recorded as content.
+This proves it because the failure only appears from the second
+placeholder onward: before the fix this exact assertion failed with
+`"1 must be under {max"` (I ran it against the pre-fix code to check),
+so a green run means the scan-resume bug is gone — not just that the
+code compiles. Running it:
+
+```text
+$ mvn test -Dtest=MessageInterpolatorTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
+````
+
+First person, blog-style prose, the disagreement with the LLM recorded (the wrong first diagnosis is content, not noise), and the proof shown in full: test snippet, why it proves the fix, real runner output.
 
 ## Sample header block (what the top of the file looks like)
 

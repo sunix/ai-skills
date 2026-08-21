@@ -21,15 +21,31 @@ Maintain a making-of journal for this repository: a first-person, blog-ish accou
 
 - Read the whole file first and match its voice, language, and formatting exactly.
 - Append one or more new `##` sections covering what happened since the last update. Do not pad: if the session produced one decision, write one short section.
+- Each update must cover three things:
+  1. **What was done** — the changes, decisions, and outcomes of the session.
+  2. **The discussions with the LLM** — what the agent proposed, what the author pushed back on or corrected, and how the disagreement resolved. A correction the author made to the agent's first answer is prime content.
+  3. **Proof that generated code works** — see "Show proof, not claims" below. If code was written this session, the update is not complete without its evidence.
 - Update the `*Last updated:*` date. Change nothing else in the header block.
 - Never rewrite or delete past sections. If a past conclusion turned out wrong, say so in the new section — the reversal is the content.
 
+## Show proof, not claims
+
+When a session produced generated code (a fix, a feature), never just state that it works. Include the evidence, as a reader would need it to believe you:
+
+- **A snippet of the test** that exercises the change — the generated test itself, trimmed to the relevant assertion, in a fenced code block.
+- **Why this test proves it** — one or two sentences connecting the assertion to the bug or requirement: what would have failed before the change, and why passing now means the behavior is correct (not just that the code runs).
+- **The actual output of running it** — the real test-runner output (trimmed), in a fenced code block. A green run that was actually executed, not a description of one. If the test was also run against the pre-fix code to show it failing, include that red output too — it is the strongest proof.
+
+If the change cannot be proven by a test (docs, config), show the equivalent evidence: the command run and its real output.
+
 ## Content rules (both modes)
 
+- **Blog style, not changelog style.** Full sentences and narrative flow, written to be read — the kind of text that could be published as a blog post as-is. Section titles are statements or hooks ("Turns out the install script needed fixes first"), not labels ("Fixes"). No bare bullet lists of commits.
 - **First person, past tense, honest.** The human author's journal, drafted by you. No marketing tone, no "we are excited to".
 - **Record reasoning, not just outcomes.** What was tried first, why it fell apart, what was landed on instead. Dead ends get their own paragraphs.
+- **Record the conversation.** The back-and-forth with the LLM is part of the story: what was asked, what the agent got wrong, what the author corrected. Quote the pivotal exchange when it explains a decision.
+- **Show proof, not claims.** Generated code is only "done" in the journal when the evidence is shown (see the section above).
 - **Be concrete.** Link actual PRs, issues, and files; quote measured numbers; use tables for data. When a claim was verified, say against what.
-- **Distinguish roles.** What the agent proposed, what the human corrected or decided, what was checked against the code.
 - **Keep it readable in one sitting.** Sections short, one idea each.
 
 ## Splitting into a post series

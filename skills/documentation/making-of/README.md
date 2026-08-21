@@ -9,10 +9,11 @@ Formal docs explain **what** the project is. A making-of records **how it came t
 ## What it does
 
 1. Creates a `MAKING-OF.md` at the repository root (or adds a new entry to an existing one).
-2. Writes in the **author's first-person voice** — the human's journal, drafted by the agent.
-3. At the end of a work session, appends a new section covering what happened since the last update: decisions, dead ends, links to PRs/issues, measured numbers.
-4. Updates the **Last updated** date on every edit.
-5. When the file grows too large, splits into one post per milestone under `doc/making-of/`, with the root file becoming an index.
+2. Writes in the **author's first-person voice**, in **blog style** — narrative prose meant to be read, not a changelog. The human's journal, drafted by the agent.
+3. At the end of a work session, appends a new section covering what happened since the last update: what was done, the discussions with the LLM (proposals, pushback, corrections), decisions, dead ends, links to PRs/issues, measured numbers.
+4. When code was generated, includes **proof that it works**: a snippet of the generated test, an explanation of why that test proves the fix, and the real output of running it.
+5. Updates the **Last updated** date on every edit.
+6. When the file grows too large, splits into one post per milestone under `doc/making-of/`, with the root file becoming an index.
 
 ## The two layouts
 
@@ -25,10 +26,12 @@ Start with the single document. Split only when a section boundary is natural (a
 
 ## Content rules
 
+- **Blog style.** Narrative prose with full sentences and section titles that read like hooks, not labels — text that could be published as a blog post as-is. Never a changelog or a bullet list of commits.
 - **First person, past tense, honest.** "I tried X, it fell apart because Y" — never marketing tone, never "we are pleased to".
 - **Record the dead ends.** A reversal ("first instinct was forks; landed on worktrees") is the most valuable content, not something to edit out.
+- **Record the conversation.** The back-and-forth with the LLM is part of the story: what was proposed, what the author corrected, how the disagreement resolved.
+- **Show proof, not claims.** When code was generated, the journal shows the evidence: the test snippet, why passing it proves the behavior is correct, and the real output of the test run — not just "it works now".
 - **Be concrete.** Link the actual PRs and issues, quote the actual numbers, use tables for measured data. A claim that was verified says where it was verified.
-- **Distinguish who did what.** What the agent proposed, what the human corrected, what was checked against the code.
 - **Never rewrite history.** Past sections stay as written; if a past conclusion turned out wrong, add a new section saying so (that reversal is content).
 
 ## The header block
