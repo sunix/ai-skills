@@ -13,10 +13,22 @@ Thank you for contributing to ai-skills. Follow these guidelines to keep the lib
 
 | File | Purpose |
 |------|---------|
+| `SKILL.md` | [Agent Skills](https://agentskills.my/specification/) entry point: YAML frontmatter (`name`, `description`) + condensed agent instructions. This is what skill tooling (Claude Code plugins, `gh skill`, `npx skills`) discovers and loads |
 | `README.md` | Human-readable explanation, prerequisites, usage, and customization notes |
 | `prompt.md` | AI-agent-ready prompt that instructs an agent to apply the skill |
 | `templates/<file>` | One or more copyable implementation files (YAML, scripts, configs, etc.) |
 | `examples/example-usage.md` | Concrete examples showing the skill in action |
+
+### SKILL.md requirements
+
+- Frontmatter: `name` (kebab-case, matching the directory name) and `description` (one or two sentences stating what the skill does **and when to use it** — agents match on this text).
+- Body: condensed instructions linking to `prompt.md`, `templates/`, and `README.md` by relative path.
+- If you create a **new category** directory, also add it to the `skills` array in [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json) — skill discovery scans each listed category directory one level deep.
+- Verify discovery before opening the PR:
+  ```bash
+  claude plugin validate .
+  claude --plugin-dir . plugin details ai-skills   # your skill must appear in the inventory
+  ```
 
 ## Documentation requirements
 

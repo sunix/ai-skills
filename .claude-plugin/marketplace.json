@@ -1,0 +1,19 @@
+{
+  "name": "sunix-ai-skills",
+  "owner": {
+    "name": "Sun S. D. Tan",
+    "url": "https://github.com/sunix"
+  },
+  "metadata": {
+    "description": "Reusable AI-agent skills library: GitHub Actions workflows (Surge deploys, PR previews, release-please), webapp snippets, and documentation practices (making-of journals).",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "ai-skills",
+      "source": "./",
+      "description": "All skills from the ai-skills library: Surge deploys and PR previews, release-please automation, GitHub star button, making-of journals.",
+      "category": "productivity"
+    }
+  ]
+}
