@@ -6,10 +6,32 @@ A reusable skills library for AI coding agents such as GitHub Copilot, Claude Co
 
 A skill is a self-contained, documented, and directly reusable implementation pattern. Each skill includes:
 
+- A `SKILL.md` in the open [Agent Skills](https://agentskills.my/specification/) format, discoverable by skill tooling
 - A `README.md` explaining what it does and how to use it
 - A `prompt.md` written for AI agents to consume directly
 - One or more implementation files or templates
 - Concrete examples that can be copied into another repository
+
+## Installing these skills in your projects
+
+The repository is a **Claude Code plugin marketplace**. In Claude Code:
+
+```
+/plugin marketplace add sunix/ai-skills
+/plugin install ai-skills@sunix-ai-skills
+```
+
+All skills then load automatically (invoke them as `/ai-skills:making-of`, `/ai-skills:release-please`, etc.).
+
+Because every skill follows the open Agent Skills format, generic skill installers work too:
+
+```bash
+# GitHub CLI (v2.90+)
+gh skill install sunix/ai-skills making-of
+
+# npx skills (installs into .claude/skills/ or .agents/skills/)
+npx skills add sunix/ai-skills
+```
 
 ## Purpose
 

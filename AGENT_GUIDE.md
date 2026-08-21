@@ -22,11 +22,12 @@ This guide defines how an AI coding agent should use this repository.
 
 1. Create a directory under `skills/<category>/<skill-name>/` using kebab-case.
 2. Add the required files (see [CONTRIBUTING.md](CONTRIBUTING.md)):
+   - `SKILL.md` (Agent Skills format: frontmatter `name`/`description` + condensed instructions)
    - `README.md`
    - `prompt.md`
    - `templates/<template-file>`
    - `examples/example-usage.md`
-3. Add an entry to [`skills/index.md`](skills/index.md).
+3. Add an entry to [`skills/index.md`](skills/index.md). If the category is new, add its directory to the `skills` array in `.claude-plugin/plugin.json`.
 4. Follow the style rules in [`standards/markdown-style.md`](standards/markdown-style.md).
 5. Open a pull request.
 

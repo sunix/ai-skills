@@ -1,0 +1,17 @@
+{
+  "name": "ai-skills",
+  "description": "Reusable AI-agent skills: GitHub Actions workflows (Surge deploys, PR previews, release-please), webapp snippets, and documentation practices (making-of journals).",
+  "version": "1.0.0",
+  "author": {
+    "name": "Sun S. D. Tan",
+    "url": "https://github.com/sunix"
+  },
+  "homepage": "https://github.com/sunix/ai-skills",
+  "repository": "https://github.com/sunix/ai-skills",
+  "license": "MIT",
+  "skills": [
+    "./skills/github-actions",
+    "./skills/webapp",
+    "./skills/documentation"
+  ]
+}
