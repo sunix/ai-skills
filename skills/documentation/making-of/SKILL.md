@@ -22,6 +22,8 @@ Read the whole file, match its voice and language, and append new `##` sections 
 
 When the session generated interesting code, also **walk through it**: quote the load-bearing snippets (trimmed) and explain why they are written that way — the tricky rule they encode, the edge they guard. The journal is where a reader should understand the code's ideas, not just its existence.
 
+When the session created several files, give the **tour of the machinery**: every new file's role and who calls what, told as a story — follow one command or request through the layers from entry point to effect — never as a bare inventory, and with enough trimmed snippets that the reader never has to leave the journal for the code. Cover what a curious reader, maintainer, or new contributor needs to open the hood: entry points, the core engine, the boundaries to the outside world, and how the tests mirror the layout. Don't let one clever piece eclipse the feature around it.
+
 Update the `*Last updated:*` date. Never rewrite or delete past sections — a reversed conclusion gets a new section saying so.
 
 ## Style rules
