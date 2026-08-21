@@ -36,6 +36,7 @@ This repository serves as a shared reference for AI agents and human developers.
 |-------|-------------|
 | [`pr-preview-surge`](skills/github-actions/pr-preview-surge/README.md) | Deploy a static site PR preview to Surge when a `/preview` comment is posted on a pull request |
 | [`push-to-surge`](skills/github-actions/push-to-surge/README.md) | Deploy a static site to Surge automatically on every push to the `main` branch |
+| [`release-please`](skills/github-actions/release-please/README.md) | Automate versioning and GitHub Releases using release-please and Conventional Commits |
 
 ### Webapp
 
