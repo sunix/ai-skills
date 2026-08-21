@@ -29,8 +29,11 @@ Start with the single document. Split only when a section boundary is natural (a
 - **Blog style.** Narrative prose with full sentences and section titles that read like hooks, not labels — text that could be published as a blog post as-is. Never a changelog or a bullet list of commits.
 - **First person, past tense, honest.** "I tried X, it fell apart because Y" — never marketing tone, never "we are pleased to".
 - **Record the dead ends.** A reversal ("first instinct was forks; landed on worktrees") is the most valuable content, not something to edit out.
+- **Goal first, with a concrete example.** Every session or milestone entry opens with what it set out to accomplish, shown concretely (the input the user writes, the command they run, the result they should get), before any how.
 - **Record the conversation.** The back-and-forth with the LLM is part of the story: what was proposed, what the author corrected, how the disagreement resolved.
-- **Show proof, not claims.** When code was generated, the journal shows the evidence: the test snippet, why passing it proves the behavior is correct, and the real output of the test run — not just "it works now".
+- **Show proof, not claims.** When code was generated, the journal shows the evidence: the test snippet, why passing it proves the behavior is correct, and the real output of the test run — not just "it works now". Prefer oracle-based proofs (test against a reference tool's answer) over hardcoded expected values.
+- **Walk through interesting code.** Quote the load-bearing snippets and explain why they are written that way — the reader should come away understanding the code's ideas, not just that it exists.
+- **No meta-narration.** The journal never discusses its own writing or updating (exception: a repo whose subject is the making-of practice itself, like this skill's repo).
 - **Be concrete.** Link the actual PRs and issues, quote the actual numbers, use tables for measured data. A claim that was verified says where it was verified.
 - **Never rewrite history.** Past sections stay as written; if a past conclusion turned out wrong, add a new section saying so (that reversal is content).
 
