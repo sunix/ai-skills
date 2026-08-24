@@ -3,10 +3,13 @@ name: Push skill to OCI registry
 # Manual publish: builds diderot from source (no release yet) and pushes one skill
 # directory as an OCI artifact to ghcr.io, under the same owner as this repository.
 #
-# First push of a given package name lands PRIVATE on ghcr.io regardless of this
-# repo's visibility — see the "Packages" tab on the repository owner's profile to
-# flip it to Public afterwards (Package settings > Change visibility), or set the
-# account-wide default under https://github.com/settings/packages beforehand.
+# Package visibility: general GHCR guidance says new packages always start private,
+# but empirically, a GITHUB_TOKEN push from a workflow running in this (public) repo
+# produced a package that was public from the very first push — GitHub appears to
+# auto-link the package's visibility to its public source repository. If a future push
+# ever comes out private, flip it under the "Packages" tab on the repository owner's
+# profile (Package settings > Change visibility), or set the account-wide default under
+# https://github.com/settings/packages beforehand.
 on:
   workflow_dispatch:
     inputs:
