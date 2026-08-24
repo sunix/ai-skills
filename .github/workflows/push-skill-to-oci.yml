@@ -1,0 +1,72 @@
+name: Push skill to OCI registry
+
+# Manual publish: builds diderot from source (no release yet) and pushes one skill
+# directory as an OCI artifact to ghcr.io, under the same owner as this repository.
+#
+# First push of a given package name lands PRIVATE on ghcr.io regardless of this
+# repo's visibility — see the "Packages" tab on the repository owner's profile to
+# flip it to Public afterwards (Package settings > Change visibility), or set the
+# account-wide default under https://github.com/settings/packages beforehand.
+on:
+  workflow_dispatch:
+    inputs:
+      skill_path:
+        description: "Path under skills/, e.g. documentation/making-of"
+        required: true
+        default: documentation/making-of
+      tag:
+        description: "Tag to publish the skill under"
+        required: true
+        default: v1
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out ai-skills
+        uses: actions/checkout@v4
+
+      # diderot has no release yet (M3), so build it from source for this run.
+      - name: Check out diderot
+        uses: actions/checkout@v4
+        with:
+          repository: sunix/diderot
+          path: diderot
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: diderot/pom.xml
+
+      - name: Build diderot
+        working-directory: diderot
+        run: ./mvnw -q package -DskipTests
+
+      # Writes ~/.docker/config.json, which diderot's OCI client reads for registry auth.
+      - name: Log in to ghcr.io
+        run: echo "${{ github.token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push skill
+        id: push
+        run: |
+          skill_name="$(basename "${{ inputs.skill_path }}")"
+          ref="ghcr.io/${{ github.repository_owner }}/skills/${skill_name}:${{ inputs.tag }}"
+          echo "Pushing skills/${{ inputs.skill_path }} to oci://${ref}"
+          java -jar diderot/target/quarkus-app/quarkus-run.jar push \
+            "skills/${{ inputs.skill_path }}" "${ref}" | tee push-output.txt
+          echo "reference=${ref}" >> "$GITHUB_OUTPUT"
+
+      - name: Summary
+        run: |
+          {
+            echo "### Pushed \`${{ steps.push.outputs.reference }}\`"
+            echo '```'
+            cat push-output.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
