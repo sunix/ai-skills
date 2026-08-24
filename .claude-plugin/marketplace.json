@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Reusable AI-agent skills library: GitHub Actions workflows (Surge deploys, PR previews, release-please), webapp snippets, and documentation practices (making-of journals).",
-    "version": "1.2.0"
+    "version": "1.3.0"
   },
   "plugins": [
     {
