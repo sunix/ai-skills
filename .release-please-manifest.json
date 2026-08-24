@@ -1,0 +1,7 @@
+{
+  "skills/documentation/making-of": "1.0.0",
+  "skills/github-actions/pr-preview-surge": "1.0.0",
+  "skills/github-actions/push-to-surge": "1.0.0",
+  "skills/github-actions/release-please": "1.0.0",
+  "skills/webapp/github-star-button": "1.0.0"
+}
