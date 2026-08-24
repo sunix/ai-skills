@@ -22,6 +22,14 @@ Read the whole file, match its voice and language, and append new `##` sections 
 
 When the session generated interesting code, also **walk through it**: quote the load-bearing snippets (trimmed) and explain why they are written that way — the tricky rule they encode, the edge they guard. The journal is where a reader should understand the code's ideas, not just its existence.
 
+**Write every code and command block as a shoulder-to-shoulder explanation** — as if you had invited another developer to look at your screen. This is the register for both:
+
+- *Showing code*: name the file worth opening, then take a path through it. "Start with `push`, which is shorter than you'd expect." "Now the other direction, and the interesting part is what it *doesn't* have." "Look at that last line." Never a declarative label followed by a fence.
+- *Showing commands*: say what you are about to run and what to watch for, so the reader knows which question the output answers before they see it. "So watch what it prints." "Then the two commands that matter, run against that freshly produced executable."
+- Every fenced block earns the sentence above it: that sentence says *why the block is there*, not merely that it exists. A lead-in ending in a bare colon after a flat clause ("…torn down at the end of the run:") is the tell.
+- When context is long, put the short pointer *before* the block and the explanation *after* it — the reader should reach the code within a line or two, then be told what they just read.
+- Opening on inventory (dependency coordinates, a list of new files) reads as a changelog. Open on what the reader should do or notice; details follow.
+
 When the session created several files, give the **tour of the machinery**: every new file's role and who calls what, told as a story — follow one command or request through the layers from entry point to effect — never as a bare inventory, and with enough trimmed snippets that the reader never has to leave the journal for the code. Cover what a curious reader, maintainer, or new contributor needs to open the hood: entry points, the core engine, the boundaries to the outside world, and how the tests mirror the layout. Don't let one clever piece eclipse the feature around it.
 
 Update the `*Last updated:*` date. Never rewrite or delete past sections — a reversed conclusion gets a new section saying so.
