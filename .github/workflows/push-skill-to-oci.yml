@@ -1,24 +1,24 @@
 name: Push skill to OCI registry
 
-# Manual publish: builds diderot from source (no release yet) and pushes one skill
-# directory as an OCI artifact to ghcr.io, under the same owner as this repository.
+# Manual publish: installs the released diderot CLI and pushes skill directories to
+# ghcr.io as OCI artifacts, under the same owner as this repository.
 #
-# Package visibility: general GHCR guidance says new packages always start private,
-# but empirically, a GITHUB_TOKEN push from a workflow running in this (public) repo
-# produced a package that was public from the very first push — GitHub appears to
-# auto-link the package's visibility to its public source repository. If a future push
-# ever comes out private, flip it under the "Packages" tab on the repository owner's
-# profile (Package settings > Change visibility), or set the account-wide default under
+# Package visibility: general GHCR guidance says new packages always start private, but
+# empirically, a GITHUB_TOKEN push from a workflow running in this (public) repo produced
+# a package that was public from the very first push — GitHub appears to auto-link the
+# package's visibility to its public source repository. If a future push ever comes out
+# private, flip it under the "Packages" tab on the repository owner's profile (Package
+# settings > Change visibility), or set the account-wide default under
 # https://github.com/settings/packages beforehand.
 on:
   workflow_dispatch:
     inputs:
       skill_path:
-        description: "Path under skills/, e.g. documentation/making-of"
-        required: true
-        default: documentation/making-of
+        description: "Path under skills/ (e.g. documentation/making-of). Leave empty to push every skill."
+        required: false
+        default: ""
       tag:
-        description: "Tag to publish the skill under"
+        description: "Tag to publish the skill(s) under"
         required: true
         default: v1
 
@@ -33,43 +33,41 @@ jobs:
       - name: Check out ai-skills
         uses: actions/checkout@v4
 
-      # diderot has no release yet (M3), so build it from source for this run.
-      - name: Check out diderot
-        uses: actions/checkout@v4
-        with:
-          repository: sunix/diderot
-          path: diderot
+      # diderot ships a native binary since v0.1.0, so there is nothing to compile here
+      # any more: the installer picks the right one for this runner and verifies its
+      # SHA-256 before putting it on the PATH. Pin DIDEROT_VERSION if a release ever
+      # needs to be held back.
+      - name: Install diderot
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/sunix/diderot/main/install.sh | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "21"
-          cache: maven
-          cache-dependency-path: diderot/pom.xml
-
-      - name: Build diderot
-        working-directory: diderot
-        run: ./mvnw -q package -DskipTests
+      - name: Which diderot
+        run: diderot --version
 
       # Writes ~/.docker/config.json, which diderot's OCI client reads for registry auth.
       - name: Log in to ghcr.io
         run: echo "${{ github.token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Push skill
-        id: push
+      - name: Push skill(s)
         run: |
-          skill_name="$(basename "${{ inputs.skill_path }}")"
-          ref="ghcr.io/${{ github.repository_owner }}/skills/${skill_name}:${{ inputs.tag }}"
-          echo "Pushing skills/${{ inputs.skill_path }} to oci://${ref}"
-          java -jar diderot/target/quarkus-app/quarkus-run.jar push \
-            "skills/${{ inputs.skill_path }}" "${ref}" | tee push-output.txt
-          echo "reference=${ref}" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          owner="${{ github.repository_owner }}"
+          tag="${{ inputs.tag }}"
 
-      - name: Summary
-        run: |
-          {
-            echo "### Pushed \`${{ steps.push.outputs.reference }}\`"
-            echo '```'
-            cat push-output.txt
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+          # One explicit skill, or every directory under skills/ that has a SKILL.md.
+          if [ -n "${{ inputs.skill_path }}" ]; then
+            dirs="skills/${{ inputs.skill_path }}"
+            [ -f "$dirs/SKILL.md" ] || { echo "::error::no SKILL.md in $dirs"; exit 1; }
+          else
+            dirs="$(find skills -name SKILL.md -printf '%h\n' | sort)"
+          fi
+
+          echo "### Pushed to \`ghcr.io/$owner/skills\`" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          for dir in $dirs; do
+            name="$(basename "$dir")"
+            echo "==> $dir -> oci://ghcr.io/$owner/skills/$name:$tag"
+            diderot push "$dir" "ghcr.io/$owner/skills/$name:$tag" | tee -a "$GITHUB_STEP_SUMMARY"
+          done
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
