@@ -21,6 +21,24 @@ Keep a continuously updated "Release PR" that accumulates [Conventional Commits]
 
 Every push to `main` causes release-please to evaluate new commits and keep the Release PR up to date.
 
+## Required repository setting
+
+**Settings → Actions → General → Workflow permissions → "Allow GitHub Actions to create
+and approve pull requests"** must be enabled. It is off by default, and set per
+repository.
+
+Without it, release-please parses your commits, computes the versions, writes the
+changelog, pushes its own `release-please--branches--main` branch — and then fails on the
+last call:
+
+```text
+release-please failed: GitHub Actions is not permitted to create or approve pull requests.
+```
+
+No Release PR appears, and because nothing else depends on this workflow, the red run is
+easy to miss. Check the workflow's status after your first merge instead of concluding
+that there was nothing to release.
+
 ## Required secrets
 
 No secrets are strictly required. The workflow uses the built-in `GITHUB_TOKEN` by default.
