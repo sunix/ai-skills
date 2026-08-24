@@ -31,6 +31,14 @@ This guide defines how an AI coding agent should use this repository.
 4. Follow the style rules in [`standards/markdown-style.md`](standards/markdown-style.md).
 5. Open a pull request.
 
+## Versioning
+
+Skills are versioned independently, driven by the commit scope: `feat(making-of): …`
+bumps only `making-of`. Merging the Release PR publishes that skill to
+`ghcr.io/sunix/skills/<name>` at its new semver tag plus `latest`. A new skill needs a
+`version.txt` (seeded `1.0.0`) and an entry in both `release-please-config.json` and
+`.release-please-manifest.json`. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## What agents must not do
 
 - Do not skip the skill index lookup before generating a new implementation.

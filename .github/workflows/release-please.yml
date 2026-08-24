@@ -1,0 +1,41 @@
+name: Release Please
+
+# Per-skill releases. Each skill directory under skills/ is its own release-please
+# package, so `feat(making-of): …` bumps only that skill and tags it `making-of-v1.1.0`.
+# Merging the Release PR publishes those releases, and the publish job below then pushes
+# exactly the skills that were released to ghcr.io.
+#
+# The publish step is chained in this same workflow on purpose: a Release created with
+# the default GITHUB_TOKEN cannot trigger a separate `on: release: published` workflow
+# (GitHub's anti-loop safeguard), and chaining avoids needing a PAT to work around it.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      paths_released: ${{ steps.release.outputs.paths_released }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish:
+    needs: release-please
+    if: needs.release-please.outputs.releases_created == 'true'
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/push-skill-to-oci.yml
+    with:
+      paths: ${{ needs.release-please.outputs.paths_released }}

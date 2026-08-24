@@ -30,6 +30,40 @@ Thank you for contributing to ai-skills. Follow these guidelines to keep the lib
   claude --plugin-dir . plugin details ai-skills   # your skill must appear in the inventory
   ```
 
+## Versioning and publishing
+
+Each skill is versioned **independently**. `release-please` treats every directory under
+`skills/` as its own package, so the scope in your commit message decides what moves:
+
+```
+feat(making-of): require a machinery tour     ->  making-of 1.0.0 -> 1.1.0
+fix(push-to-surge): correct the publish dir   ->  push-to-surge 1.0.0 -> 1.0.1
+docs: tidy the index                          ->  nothing bumped
+```
+
+Use the skill's directory name as the scope. Merging the Release PR that release-please
+maintains tags each released skill (`making-of-v1.1.0`), and then publishes it to
+`ghcr.io/sunix/skills/<name>` under **two** tags: the semver one, `1.1.0`, and `latest`
+moved forward.
+
+One caveat worth knowing: a semver tag is stable in practice because the release flow
+pushes it once, but it is not *technically* immutable. The ORAS SDK stamps each push with
+a fresh `org.opencontainers.image.created` timestamp, so re-publishing the same skill at
+the same version produces a different manifest digest — identical content, different
+manifest. Consumers are unaffected (diderot verifies the content digest, which does not
+change), but avoid re-dispatching a publish for a version that already exists.
+
+There is deliberately no floating `v1`: a consumer wanting "the newest 1.x" expresses
+that as a range (`^1.0.0`) against the published semver tags, and a major-only tag would
+look like a pin while quietly moving. `latest` cannot be misread.
+
+`version.txt` in each skill directory is release-please's bookkeeping — don't edit it by
+hand. It ships inside the skill, so consumers can read it after installing.
+
+The version is deliberately *not* duplicated into `SKILL.md`'s frontmatter, even though
+the Agent Skills spec has a field for it: diderot resolves versions from the **OCI tag**,
+never from the file, so a second copy would buy nothing and could drift from the first.
+
 ## Documentation requirements
 
 - All documentation must be written in **English**.

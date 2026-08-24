@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "separate-pull-requests": false,
+  "packages": {
+    "skills/documentation/making-of": {
+      "release-type": "simple",
+      "component": "making-of"
+    },
+    "skills/github-actions/pr-preview-surge": {
+      "release-type": "simple",
+      "component": "pr-preview-surge"
+    },
+    "skills/github-actions/push-to-surge": {
+      "release-type": "simple",
+      "component": "push-to-surge"
+    },
+    "skills/github-actions/release-please": {
+      "release-type": "simple",
+      "component": "release-please"
+    },
+    "skills/webapp/github-star-button": {
+      "release-type": "simple",
+      "component": "github-star-button"
+    }
+  }
+}
