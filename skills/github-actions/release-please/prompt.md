@@ -22,6 +22,16 @@ Requirements:
 
 Do not add `release-please-config.json` or `.release-please-manifest.json` unless the user explicitly asks for multi-package or custom configuration.
 
+After adding the workflow, **tell the user in your reply** that they must enable
+**Settings → Actions → General → Workflow permissions → "Allow GitHub Actions to create
+and approve pull requests"**. It is off by default and set per repository. Without it,
+release-please does all of its work and then fails on the last step with
+`GitHub Actions is not permitted to create or approve pull requests`, having already
+created its release branch — a failure quiet enough to go unnoticed for several pushes,
+because nothing downstream depends on that workflow yet. Tell them to check the workflow's
+run status after the first merge rather than assuming that "no Release PR" means "nothing
+to release".
+
 After adding the workflow, update the project's agent instruction file (e.g. `AGENT.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, or whichever agent file already exists in the repository). Add or extend a section that enforces:
 - **Conventional Commits** for all commit messages and pull request titles (format: `<type>[scope]: <description>`, e.g. `feat: add login page`, `fix(auth): correct redirect`). This is required for release-please to compute version bumps correctly.
 - **One logical commit per pull request** — squash intermediate commits before opening or updating a PR.
