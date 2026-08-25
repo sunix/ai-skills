@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/sunix/ai-skills/compare/release-please-v1.1.0...release-please-v1.2.0) (2026-08-25)
+
+
+### Features
+
+* **release-please:** warn about the repository setting and tell the user ([#27](https://github.com/sunix/ai-skills/issues/27)) ([9ccda38](https://github.com/sunix/ai-skills/commit/9ccda3883b02a9f87852ae6ed420dd682bf26a71))
+
 ## [1.1.0](https://github.com/sunix/ai-skills/compare/release-please-v1.0.0...release-please-v1.1.0) (2026-08-24)
 
 
