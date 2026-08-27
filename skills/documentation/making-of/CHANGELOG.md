@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/sunix/ai-skills/compare/making-of-v1.1.0...making-of-v1.2.0) (2026-08-27)
+
+
+### Features
+
+* **making-of:** state the register the other rules follow from ([#33](https://github.com/sunix/ai-skills/issues/33)) ([58abd57](https://github.com/sunix/ai-skills/commit/58abd575e5a3f04de44588cf72dda99f01e0ec5a))
+
 ## [1.1.0](https://github.com/sunix/ai-skills/compare/making-of-v1.0.0...making-of-v1.1.0) (2026-08-24)
 
 
