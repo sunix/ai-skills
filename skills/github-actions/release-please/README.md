@@ -2,6 +2,32 @@
 
 Automate versioning and GitHub Releases using [release-please](https://github.com/googleapis/release-please).
 
+## Install it with diderot
+
+[diderot](https://github.com/sunix/diderot) is a package manager for agent skills: it resolves a version constraint, pins what it resolved to by content digest in `diderot.lock`, and installs the same bytes anywhere. From the registry:
+
+```bash
+diderot add oci://ghcr.io/sunix/skills/release-please --version latest
+diderot install
+```
+
+Or from this repository, to follow git rather than releases:
+
+```bash
+diderot add git+https://github.com/sunix/ai-skills#skills/github-actions/release-please --version main
+diderot install
+```
+
+`diderot add` needs a build newer than v0.2.0 ([diderot#34](https://github.com/sunix/diderot/pull/34)). With v0.2.0, declare it in `diderot.yaml` yourself and run `diderot update && diderot install`:
+
+```yaml
+skills:
+  - name: release-please
+    source: oci://ghcr.io/sunix/skills/release-please
+    version: latest        # or an exact tag, or a range like "^1.0.0"
+targets: [claude]          # or [agents], for .agents/skills
+```
+
 ## Purpose
 
 Keep a continuously updated "Release PR" that accumulates [Conventional Commits](https://www.conventionalcommits.org/) changes. Merging that PR automatically bumps the version, publishes a GitHub Release, creates a tag, and updates `CHANGELOG.md` — with no manual steps.

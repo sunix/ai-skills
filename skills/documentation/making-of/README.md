@@ -2,6 +2,32 @@
 
 Maintain a first-person "making-of" journal in a repository — a blog-ish account of how the project is being built, updated at the end of each AI-assisted work session.
 
+## Install it with diderot
+
+[diderot](https://github.com/sunix/diderot) is a package manager for agent skills: it resolves a version constraint, pins what it resolved to by content digest in `diderot.lock`, and installs the same bytes anywhere. From the registry:
+
+```bash
+diderot add oci://ghcr.io/sunix/skills/making-of --version latest
+diderot install
+```
+
+Or from this repository, to follow git rather than releases:
+
+```bash
+diderot add git+https://github.com/sunix/ai-skills#skills/documentation/making-of --version main
+diderot install
+```
+
+`diderot add` needs a build newer than v0.2.0 ([diderot#34](https://github.com/sunix/diderot/pull/34)). With v0.2.0, declare it in `diderot.yaml` yourself and run `diderot update && diderot install`:
+
+```yaml
+skills:
+  - name: making-of
+    source: oci://ghcr.io/sunix/skills/making-of
+    version: latest        # or an exact tag, or a range like "^1.0.0"
+targets: [claude]          # or [agents], for .agents/skills
+```
+
 ## Purpose
 
 Formal docs explain **what** the project is. A making-of records **how it came together**: the reasoning, the measurements, the false starts, and the reversals — especially the reversals. It is written for new contributors, for future-you, and for anyone curious about building software with AI agents, and it may later turn into an actual blog post.
