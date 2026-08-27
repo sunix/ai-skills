@@ -2,6 +2,32 @@
 
 Add a GitHub star button to a webapp that displays the live star count of a repository and links visitors directly to the GitHub page to star it.
 
+## Install it with diderot
+
+[diderot](https://github.com/sunix/diderot) is a package manager for agent skills: it resolves a version constraint, pins what it resolved to by content digest in `diderot.lock`, and installs the same bytes anywhere. From the registry:
+
+```bash
+diderot add oci://ghcr.io/sunix/skills/github-star-button --version "^1.0.0"
+diderot install
+```
+
+Or from this repository, to follow git rather than releases:
+
+```bash
+diderot add git+https://github.com/sunix/ai-skills#skills/webapp/github-star-button --version main
+diderot install
+```
+
+`diderot add` needs a build newer than v0.2.0 ([diderot#34](https://github.com/sunix/diderot/pull/34)). With v0.2.0, declare it in `diderot.yaml` yourself and run `diderot update && diderot install`:
+
+```yaml
+skills:
+  - name: github-star-button
+    source: oci://ghcr.io/sunix/skills/github-star-button
+    version: "^1.0.0"      # newest 1.x — or an exact tag, or `latest`
+targets: [claude]          # or [agents], for .agents/skills
+```
+
 ## Purpose
 
 Encourage visitors to star your repository by surfacing the current star count alongside a direct link to the GitHub repo page, updated dynamically on every page load.

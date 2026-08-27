@@ -33,6 +33,17 @@ gh skill install sunix/ai-skills making-of
 npx skills add sunix/ai-skills
 ```
 
+Or with [diderot](https://github.com/sunix/diderot), which resolves a semver range against the tags a
+registry publishes and verifies the installed bytes against a content digest:
+
+```bash
+diderot add oci://ghcr.io/sunix/skills/making-of --version "^1.0.0"
+diderot install
+```
+
+Every skill's own README carries both forms — the registry source above and the git source pointing
+back here — plus the `diderot.yaml` entry to copy if you would rather declare it by hand.
+
 ## Purpose
 
 This repository serves as a shared reference for AI agents and human developers. Instead of generating the same patterns from scratch each time, agents can discover, copy, and adapt skills from this library.

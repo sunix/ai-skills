@@ -2,6 +2,32 @@
 
 Deploy a static site to [Surge](https://surge.sh) automatically when code is pushed to the `main` branch.
 
+## Install it with diderot
+
+[diderot](https://github.com/sunix/diderot) is a package manager for agent skills: it resolves a version constraint, pins what it resolved to by content digest in `diderot.lock`, and installs the same bytes anywhere. From the registry:
+
+```bash
+diderot add oci://ghcr.io/sunix/skills/push-to-surge --version "^1.0.0"
+diderot install
+```
+
+Or from this repository, to follow git rather than releases:
+
+```bash
+diderot add git+https://github.com/sunix/ai-skills#skills/github-actions/push-to-surge --version main
+diderot install
+```
+
+`diderot add` needs a build newer than v0.2.0 ([diderot#34](https://github.com/sunix/diderot/pull/34)). With v0.2.0, declare it in `diderot.yaml` yourself and run `diderot update && diderot install`:
+
+```yaml
+skills:
+  - name: push-to-surge
+    source: oci://ghcr.io/sunix/skills/push-to-surge
+    version: "^1.0.0"      # newest 1.x — or an exact tag, or `latest`
+targets: [claude]          # or [agents], for .agents/skills
+```
+
 ## Purpose
 
 Publish the latest version of your static site to Surge on every push to `main`, giving you a continuously updated live URL without any manual steps.
