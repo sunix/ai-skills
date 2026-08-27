@@ -7,6 +7,8 @@ description: Create or update a first-person, blog-style "making-of" journal (MA
 
 Maintain a making-of journal for the current repository: a first-person, blog-style account of how the project is being built, written in the author's voice.
 
+**Write as the author with another developer sitting beside them.** Every entry is that conversation: here is the feature I built, here is why it needed building, here is the code I wrote and why it reads the way it does, and here is the proof it does what I set out to do. The rules below all follow from that one, so when they seem to conflict, ask what you would actually say to somebody looking at the screen with you. Showing beats describing. A snippet beats a summary of a snippet. A claim with no output under it is not finished. A section that would embarrass you if read aloud to that person is wrong, however well written.
+
 ## If `MAKING-OF.md` does not exist (bootstrap)
 
 Create it at the repository root from [templates/MAKING-OF.md](templates/MAKING-OF.md): a three-part header (title "Building X: ..., one prompt at a time"; italic intro stating what the document is, its journal style, audience, and update policy; a `*Last updated: YYYY-MM-DD.*` line), then a "Why this exists" section. Draft initial entries from git history and the current conversation; ask the author about anything you cannot reconstruct instead of inventing it. Write in the language the author uses with you.

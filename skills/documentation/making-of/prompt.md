@@ -6,6 +6,8 @@ Use this prompt to instruct an AI agent to create or update a first-person makin
 
 Maintain a making-of journal for this repository: a first-person, blog-ish account of how the project is being built, written in the author's voice, for new contributors and anyone curious how it came together.
 
+**Write as the author with another developer sitting beside them.** Every entry is that conversation: here is the feature I built, here is why it needed building, here is the code I wrote and why it reads the way it does, and here is the proof it does what I set out to do. The rules below all follow from that one, so when they seem to conflict, ask what you would actually say to somebody looking at the screen with you. Showing beats describing. A snippet beats a summary of a snippet. A claim with no output under it is not finished. A section that would embarrass you if read aloud to that person is wrong, however well written.
+
 ## If the file does not exist yet (bootstrap)
 
 - Create `MAKING-OF.md` at the repository root. Copy the skeleton from `skills/documentation/making-of/templates/MAKING-OF.md`.
