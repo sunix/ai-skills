@@ -19,3 +19,7 @@ build/
 # Secrets
 .env
 .env.*
+
+# Skills installed by diderot. Materialised content, rebuilt by `diderot install`
+# from the digests in diderot.lock - so the lock is what belongs in git, not this.
+.claude/skills/
