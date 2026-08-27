@@ -26,8 +26,8 @@ All skills then load automatically (invoke them as `/ai-skills:making-of`, `/ai-
 Because every skill follows the open Agent Skills format, generic skill installers work too:
 
 ```bash
-# GitHub CLI (v2.90+)
-gh skill install sunix/ai-skills making-of
+# GitHub CLI (v2.90+) — name the agent: non-interactively it defaults to github-copilot
+gh skill install sunix/ai-skills making-of --agent claude-code
 
 # npx skills (installs into .claude/skills/ or .agents/skills/)
 npx skills add sunix/ai-skills
@@ -37,7 +37,7 @@ Or with [diderot](https://github.com/sunix/diderot), which resolves a semver ran
 registry publishes and verifies the installed bytes against a content digest:
 
 ```bash
-diderot add oci://ghcr.io/sunix/skills/making-of --version "^1.0.0"
+diderot add oci://ghcr.io/sunix/skills/making-of --version latest
 diderot install
 ```
 

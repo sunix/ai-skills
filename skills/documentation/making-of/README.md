@@ -7,7 +7,7 @@ Maintain a first-person "making-of" journal in a repository — a blog-ish accou
 [diderot](https://github.com/sunix/diderot) is a package manager for agent skills: it resolves a version constraint, pins what it resolved to by content digest in `diderot.lock`, and installs the same bytes anywhere. From the registry:
 
 ```bash
-diderot add oci://ghcr.io/sunix/skills/making-of --version "^1.0.0"
+diderot add oci://ghcr.io/sunix/skills/making-of --version latest
 diderot install
 ```
 
@@ -24,7 +24,7 @@ diderot install
 skills:
   - name: making-of
     source: oci://ghcr.io/sunix/skills/making-of
-    version: "^1.0.0"      # newest 1.x — or an exact tag, or `latest`
+    version: latest        # or an exact tag, or a range like "^1.0.0"
 targets: [claude]          # or [agents], for .agents/skills
 ```
 
