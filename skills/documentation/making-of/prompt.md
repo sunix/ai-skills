@@ -35,6 +35,7 @@ Maintain a making-of journal for this repository: a first-person, blog-ish accou
   - Every fenced block earns the sentence above it: that sentence says *why the block is there*, not merely that it exists. A lead-in ending in a bare colon after a flat clause ("…torn down at the end of the run:") is the tell that it doesn't.
   - When the context is long, put the short pointer *before* the block and the explanation *after* it — the reader should reach the code within a line or two, then be told what they just read.
   - Never open a walkthrough on inventory (dependency coordinates, a list of new files): that reads as a changelog. Open on what the reader should do or notice, and let the details follow.
+- When the session drove a UI — a web app, a site, any flow with a screen — show the screen with annotated screenshots (see "Show the screen" below).
 - When the session created several files, give the **tour of the machinery**: every new file's role and who calls what, told as a story — follow one command or request through the layers, from entry point to effect — never as a bare inventory, and with enough trimmed snippets that the reader never has to leave the journal for the code. Cover what a maintainer or new contributor needs to open the hood: entry points, the core engine, the boundaries to the outside world (subprocesses, network, filesystem), and how the tests mirror the layout. Guard against tunnel vision: don't let the one clever piece of the session eclipse the feature around it.
 - Update the `*Last updated:*` date. Change nothing else in the header block.
 - Never rewrite or delete past sections. If a past conclusion turned out wrong, say so in the new section — the reversal is the content.
@@ -50,6 +51,16 @@ When a session produced generated code (a fix, a feature), never just state that
 Prefer **oracle-based proofs** over hardcoded expectations: when a reference implementation exists (the real git, the real compiler, the live API), the test should compare against the oracle's answer instead of a fixed expected value — a hardcoded value only asserts that the code does what the code does. Record that choice in the journal entry; the reasoning is content.
 
 If the change cannot be proven by a test (docs, config), show the equivalent evidence: the command run and its real output.
+
+## Show the screen (annotated screenshots)
+
+When a session drove a UI — a web app, a site, any flow with a screen — the entry shows the screen the way code entries show snippets. A described click ("then I pressed the seal button") is a claim; the annotated screenshot is its evidence, and often the only record of a state that will never come back.
+
+- **Capture at the moment of the gesture.** Screenshot the screen as the reader would see it right before (or right after) the action the prose describes. Use the browser automation at hand — Playwright for web UIs. For a sequence of gestures, one capture with numbered labels beats three captures.
+- **Annotate before capturing.** A red box or arrow on the exact spot the reader must look, plus a short label saying what they are looking at ("1 · retype the word SEAL — a stray space is a clean refusal"). Inject the annotations as a floating overlay and remove it afterwards; never alter the app's own state to decorate it.
+- **Verify the framing, then verify the file.** Scroll the annotated element to the center of the viewport; before capturing, check that the element **and** its label sit fully inside the viewport (measure with `getBoundingClientRect`, place the label above the element when it sits low). After capturing, re-read the saved image **before taking the next action**. This order matters: ceremonies, modals, wizards and error toasts are ephemeral — once the flow moves on, a truncated capture of that state cannot be retaken.
+- **Embed inline, never link.** Images live in the repo (e.g. `demo-captures/NN-slug.png`, numbered in story order) and appear inline where the story needs them: `![caption saying what to notice](demo-captures/04-seal-ceremony.png)`. A bare link ("see the annotated capture") sends the reader away mid-sentence; the picture belongs in the flow of the prose.
+- **Re-staging is content, not a secret.** If a capture must be replayed later (the state moved on, the original shipped truncated), the entry says so — what differs on screen, why the replay is faithful to the original gesture — and the superseded image stays in git history. A replay on a throwaway fixture is fine when the real state is unrecoverable, as long as the journal names it.
 
 ## Content rules (both modes)
 
