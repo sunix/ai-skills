@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/sunix/ai-skills/compare/making-of-v1.2.0...making-of-v1.3.0) (2026-08-31)
+
+
+### Features
+
+* **making-of:** annotated screenshots when a session drives a UI ([#37](https://github.com/sunix/ai-skills/issues/37)) ([bf4bd7d](https://github.com/sunix/ai-skills/commit/bf4bd7db391a3a5a3173278038054462c2a2850d))
+
 ## [1.2.0](https://github.com/sunix/ai-skills/compare/making-of-v1.1.0...making-of-v1.2.0) (2026-08-27)
 
 
