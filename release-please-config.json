@@ -6,6 +6,10 @@
       "release-type": "simple",
       "component": "making-of"
     },
+    "skills/documentation/pr-making-of": {
+      "release-type": "simple",
+      "component": "pr-making-of"
+    },
     "skills/github-actions/pr-preview-surge": {
       "release-type": "simple",
       "component": "pr-preview-surge"
