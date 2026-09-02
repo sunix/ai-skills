@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/sunix/ai-skills/compare/making-of-v1.3.0...making-of-v1.4.0) (2026-09-02)
+
+
+### Features
+
+* **making-of:** repeat goal/built/proof per point, paired on the same test ([#39](https://github.com/sunix/ai-skills/issues/39)) ([5c9701f](https://github.com/sunix/ai-skills/commit/5c9701fe4f5a8770a799bffdbb839c0de5675cb7))
+
 ## [1.3.0](https://github.com/sunix/ai-skills/compare/making-of-v1.2.0...making-of-v1.3.0) (2026-08-31)
 
 
