@@ -24,7 +24,8 @@ data. Recount the discussion with the LLM: what it proposed, what I corrected, h
 resolved. -->
 
 <!-- When the session generated code, show proof it works — the pattern is always the same
-three beats:
+three beats, code before every command, and the goal above and the proof here should point
+at the same test, red then green:
 
 The fix only counts once a test pins it down. Here is the one Claude generated:
 
@@ -32,12 +33,30 @@ The fix only counts once a test pins it down. Here is the one Claude generated:
 <the generated test, trimmed to the relevant assertion>
 ```
 
-This proves it because <what would have failed before the change, and why passing now
-means the behavior is correct>. Running it:
+Before this existed, running it looked like this — a runner line means nothing without the
+snippet above it, so the test comes first:
 
 ```text
-<real test-runner output, trimmed — actually executed, not described>
+<real red test-runner output from before the fix, trimmed — actually executed, not described>
 ```
+
+This proves the fix because <what would have failed before the change, and why passing now
+means the behavior is correct>. Here is the load-bearing part of what Claude changed:
+
+```<lang>
+<the fix, trimmed to the part that matters>
+```
+
+Running the same test again:
+
+```text
+<real green test-runner output, trimmed — actually executed, not described>
+```
+
+If a session's entry covers several distinct points (more than one feature or fix), repeat
+this goal -> built -> proof cycle once per point instead of merging them into one pass — and
+if a point's test happened to already pass before the real implementation existed, say so
+plainly rather than presenting that accidental green run as proof.
 -->
 
 <!--
