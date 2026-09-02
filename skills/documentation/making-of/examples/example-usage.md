@@ -70,7 +70,9 @@ First person, blog-style prose, the disagreement with the LLM recorded (the wron
 
 A milestone rarely ships as one fix. When a session lands three unrelated pieces of a
 feature, don't fold them into one goal → done → proof — repeat the cycle once per point, so
-each one is red, then built, then green, on its own:
+each one is red, then built, then green, on its own. And a test-runner line by itself proves
+nothing to a reader who can't see the code it ran against — every beat below carries the
+actual snippet, not just the command:
 
 ````markdown
 ## Cascading, cycle detection, and groups — three pieces, three proofs
@@ -78,17 +80,51 @@ each one is red, then built, then green, on its own:
 ### Cascading via `@Valid`
 
 **Goal.** `validate(person)` should descend into `@Valid`-annotated properties, not just
-check `Person`'s own fields. Before this existed:
+check `Person`'s own fields:
+
+```java
+public class Address {
+    @NotBlank
+    private String city;
+}
+
+public class Person {
+    @Valid
+    private Address address;
+}
+```
+
+Before this existed, the test written for exactly that was red:
+
+```java
+@Test
+void descendsIntoValidProperty() {
+    var violations = validator.validate(new Person(new Address("")));
+    assertEquals(1, violations.size());
+    assertEquals("address.city", violations.iterator().next().getPropertyPath().toString());
+}
+```
 
 ```text
 $ mvn test -Dtest=CascadingTest#descendsIntoValidProperty
 expected: <1> but was: <0>
 ```
 
-**Built.** `PathImpl` gained an `append`, so a violation two levels deep reports as
-`address.city` instead of just `city`.
+Zero violations instead of one — `address` was just an opaque field, `Address`'s own
+`@NotBlank` was invisible to the engine.
 
-**Proof.**
+**Built.** `PathImpl` gained an `append`, so a violation two levels deep reports as
+`address.city` instead of just `city`:
+
+```java
+PathImpl append(String propertyName) {
+    List<Path.Node> extended = new ArrayList<>(nodes);
+    extended.add(new NodeImpl(propertyName));
+    return new PathImpl(List.copyOf(extended));
+}
+```
+
+**Proof.** The same test, now green:
 
 ```text
 $ mvn test -Dtest=CascadingTest#descendsIntoValidProperty
@@ -98,16 +134,38 @@ BUILD SUCCESS
 
 ### Cycle detection
 
-**Goal.** A graph with a cycle back to itself has to terminate, not hang. Before cycle
-detection existed, the two-node fixture came back wrong, not stuck — cascading itself
-wasn't there yet to even attempt the recursion:
+**Goal.** A graph with a cycle back to itself has to terminate, not hang:
+
+```java
+Node a = new Node(null);
+Node b = new Node(null);
+a.next = b;
+b.next = a;
+```
+
+```java
+@Test
+void circularGraphTerminates() {
+    var violations = validator.validate(a);
+    assertEquals(2, violations.size());   // a's own violation, plus b's, reached as "next.name"
+}
+```
+
+Before cycle detection existed, the two-node fixture came back wrong, not stuck —
+cascading itself wasn't there yet to even attempt the recursion:
 
 ```text
 $ mvn test -Dtest=CascadingTest#circularGraphTerminates
 expected: <2> but was: <1>
 ```
 
-**Built.** An identity-based visited-set, checked before descending into each node.
+**Built.** An identity-based visited-set, checked before descending into each node:
+
+```java
+if (!visited.add(currentBean)) {
+    return;   // already validated this exact instance on this path — stop, don't recurse forever
+}
+```
 
 **Proof.**
 
@@ -119,8 +177,8 @@ BUILD SUCCESS
 ````
 
 Same shape, twice, each self-contained — a reader can stop after either point and already
-have the full argument for it, rather than waiting for one proof section at the end to cover
-both. (A third point — groups — would get the same treatment; trimmed here for length.)
+have the full argument for it: the failing case in code, the fix in code, the passing run.
+(A third point — groups — would get the same treatment; trimmed here for length.)
 
 ## Sample header block (what the top of the file looks like)
 

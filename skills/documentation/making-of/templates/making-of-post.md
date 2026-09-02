@@ -6,11 +6,13 @@ person, past tense, honest, concrete. -->
 
 ## <Point 1 — one feature or fix, stated as a claim or event>
 
-<!-- Goal: the concrete before/after, plus the actual red test-runner output when TDD
-produced one — same test the proof below re-runs green. What was built: the load-bearing
-snippet(s) and why they're shaped that way. Proof: the same test, now green. A post covering
-several distinct points repeats this goal -> built -> proof cycle once per point instead of
-merging them into one pass — link PRs/issues, quote numbers throughout. -->
+<!-- Goal: the class/annotation/fixture the point is about, the test method itself, and the
+actual red test-runner output it produced when TDD wrote it first — same test the proof
+below re-runs green. Code before command output, always: a runner line with no snippet
+above it proves nothing to the reader. What was built: the load-bearing snippet(s) and why
+they're shaped that way. Proof: the same test, now green. A post covering several distinct
+points repeats this goal -> built -> proof cycle once per point instead of merging them into
+one pass — link PRs/issues, quote numbers throughout. -->
 
 ## <Point 2 — another feature or fix>
 
