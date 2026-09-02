@@ -66,6 +66,62 @@ $ mvn test -Dtest=MessageInterpolatorTest
 
 First person, blog-style prose, the disagreement with the LLM recorded (the wrong first diagnosis is content, not noise), and the proof shown in full: test snippet, why it proves the fix, real runner output.
 
+## A session with several distinct points
+
+A milestone rarely ships as one fix. When a session lands three unrelated pieces of a
+feature, don't fold them into one goal → done → proof — repeat the cycle once per point, so
+each one is red, then built, then green, on its own:
+
+````markdown
+## Cascading, cycle detection, and groups — three pieces, three proofs
+
+### Cascading via `@Valid`
+
+**Goal.** `validate(person)` should descend into `@Valid`-annotated properties, not just
+check `Person`'s own fields. Before this existed:
+
+```text
+$ mvn test -Dtest=CascadingTest#descendsIntoValidProperty
+expected: <1> but was: <0>
+```
+
+**Built.** `PathImpl` gained an `append`, so a violation two levels deep reports as
+`address.city` instead of just `city`.
+
+**Proof.**
+
+```text
+$ mvn test -Dtest=CascadingTest#descendsIntoValidProperty
+Tests run: 1, Failures: 0
+BUILD SUCCESS
+```
+
+### Cycle detection
+
+**Goal.** A graph with a cycle back to itself has to terminate, not hang. Before cycle
+detection existed, the two-node fixture came back wrong, not stuck — cascading itself
+wasn't there yet to even attempt the recursion:
+
+```text
+$ mvn test -Dtest=CascadingTest#circularGraphTerminates
+expected: <2> but was: <1>
+```
+
+**Built.** An identity-based visited-set, checked before descending into each node.
+
+**Proof.**
+
+```text
+$ mvn test -Dtest=CascadingTest#circularGraphTerminates
+Tests run: 1, Failures: 0
+BUILD SUCCESS
+```
+````
+
+Same shape, twice, each self-contained — a reader can stop after either point and already
+have the full argument for it, rather than waiting for one proof section at the end to cover
+both. (A third point — groups — would get the same treatment; trimmed here for length.)
+
 ## Sample header block (what the top of the file looks like)
 
 ```markdown
