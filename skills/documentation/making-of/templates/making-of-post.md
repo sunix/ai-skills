@@ -6,7 +6,16 @@ person, past tense, honest, concrete. -->
 
 ## <Point 1 — one feature or fix, stated as a claim or event>
 
-<!-- Goal: the class/annotation/fixture the point is about, the test method itself, and the
+*Commit `<type(scope): title identical to this heading>`. Files to open: [`Foo.java`](../../path/to/Foo.java),
+[`FooTest.java`](../../path/to/FooTest.java).*
+
+<!-- One commit per point, titled like the heading, so `git log --oneline` reads as this
+post's table of contents and the commit's diff sits next to the section. The italic line
+above names it and links the two to five files to have open; the prose below points at the
+method or lines, not just the file. If two points must land in one commit, or a point has no
+commit (design discussion, test-only check), say so here instead of faking a split.
+
+Goal: the class/annotation/fixture the point is about, the test method itself, and the
 actual red test-runner output it produced when TDD wrote it first — same test the proof
 below re-runs green. Code before command output, always: a runner line with no snippet
 above it proves nothing to the reader. What was built: the load-bearing snippet(s) and why
