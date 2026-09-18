@@ -86,6 +86,38 @@ Every making-of opens with:
 
 See [`prompt.md`](prompt.md) for the agent-ready instructions and [`templates/`](templates/) for the file skeletons.
 
+## Reviewing a draft in the file itself
+
+Reviewing a long entry in a chat window means quoting the passage, describing where it is, and hoping
+the agent finds it. Instead, write the remark where it belongs — a blockquote starting with `@claude`,
+next to the sentence it is about:
+
+```markdown
+The caret reads "anything compatible with 1.0.0".
+
+> @claude is that npm's notation? say where it comes from, a reader will not know
+```
+
+Leave as many as the pass needs, then ask the agent to address them. It answers each one **in the
+prose** and **deletes the annotation** — a reader who was not in the conversation should not be able
+to tell one was ever there — and reports remark by remark what changed.
+
+Because a forgotten remark reads like content, [`templates/check-review-markers.sh`](templates/check-review-markers.sh)
+fails while any remain. Copy it into the repository (usually `scripts/`) and run it from CI:
+
+```yaml
+review-annotations:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - run: ./scripts/check-review-markers.sh
+```
+
+A marker inside a fenced code block counts as an example rather than a remark, so documentation
+explaining the convention passes its own check; pass a path to skip a file that shows one outside a
+fence. `REVIEW_MARKER=@me ./scripts/check-review-markers.sh` uses a different handle. The script
+needs nothing but `grep`, `awk` and a POSIX shell.
+
 ## Customization
 
 | What to change | How |
@@ -94,6 +126,7 @@ See [`prompt.md`](prompt.md) for the agent-ready instructions and [`templates/`]
 | Language | Match the language the author uses with the agent (the journal is personal, not project docs) |
 | Location | Repository root by default; a subdirectory main file works too |
 | Versioning | Usually committed; can be kept untracked if the journal is personal (note it in the intro block) |
+| Review marker | `@claude` by default; `REVIEW_MARKER=@me` in the guard script, and the same handle in the repository's agent instructions |
 
 ## Example usage
 
