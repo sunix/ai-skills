@@ -78,6 +78,60 @@ When a session drove a UI — a web app, a site, any flow with a screen — the 
 - **No meta-narration.** The journal never talks about the writing or updating of the journal itself — no "I updated this making-of", no describing the journal's structure, its update ritual, or the skill that produced it. Sole exception: a repository whose subject *is* the making-of practice (e.g. the repo hosting this skill).
 - **Keep it readable in one sitting.** Sections short, one idea each.
 
+## Review annotations (how the author marks up a draft)
+
+A draft comes back marked up. The author writes remarks into the file itself, as blockquotes
+beginning with `@claude`, placed immediately next to what they are about:
+
+```markdown
+The caret reads "anything compatible with 1.0.0".
+
+> @claude is that npm's notation? say where it comes from, a reader will not know
+```
+
+They may sit anywhere in any file, span several lines as long as each line is quoted, and there may
+be a dozen of them in one pass.
+
+For each one:
+
+1. **Answer it in the prose.** The remark is a question or an objection about the text. Rewrite the
+   passage so the question no longer arises — do not append a parenthesis, a footnote, or a note
+   saying "as asked". A reader who was not in the conversation should not be able to tell an
+   annotation was ever there.
+2. **Delete the annotation.** It is a working note, not content.
+3. **Say what you changed**, remark by remark, in your reply — that is where the author checks you
+   understood, not in the file.
+4. **When the answer is a fact you do not have**, go and get it: read the source, run the command,
+   quote what came back. "I could not find it" written plainly beats a paragraph that talks around
+   the hole.
+
+Two failure modes worth naming, because both look like work:
+
+- **Answering beside the text instead of in it** — adding "(this is npm's notation)" where the
+  passage needed rewriting.
+- **Answering the words rather than the objection** — the remark "this asserts X without saying
+  where it comes from" is not asking for the sentence to be softened, it is asking for the source.
+
+Nothing carrying the marker may be merged: to everyone who was not in the conversation, a forgotten
+remark reads as content. Copy `templates/check-review-markers.sh` into the repository (the usual home
+is `scripts/`) and run it from CI:
+
+```yaml
+review-annotations:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - run: ./scripts/check-review-markers.sh
+```
+
+A marker inside a fenced code block is an example, not a remark, so it is ignored — which is what
+lets the file that documents the convention pass its own check. Pass a path to skip a file that
+shows one outside a fence.
+
+Document the convention where the repository's agent instructions live (`AGENTS.md`, `CLAUDE.md`,
+`CONTRIBUTING.md`), so a human reviewer knows the syntax is available and an agent knows what to do
+with it.
+
 ## Splitting into a post series
 
 When the single file no longer reads in one sitting **and** a natural boundary exists (a milestone shipped):

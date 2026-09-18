@@ -216,6 +216,66 @@ The resulting index body:
    EL-subset evaluator.
 ```
 
+## Reviewing the draft in the file
+
+The entry above came back with remarks written into it. The author leaves them where they belong:
+
+```markdown
+A range is not the only way to sign up for that. `version: latest` is accepted too and has
+the same consequence by a different route.
+
+> @claude why the same consequence? a tag is not a range, spell out why it lands in the
+> same place
+
+The signature covers the manifest digest, so there is no gap between what was attested
+and what gets installed.
+
+> @claude is that still true now that we sign the content? check before leaving it
+```
+
+Then: *"j'ai mis quelques commentaires, tu peux les traiter ?"*
+
+The agent answers each one **inside the passage** and removes the annotation:
+
+```markdown
+A range is not the only way to sign up for that. `version: latest` is accepted too and has
+the same consequence by a different route — it follows a tag the publisher moves, rather
+than a rule diderot evaluates — and everything below applies to it identically. Only an
+exact `version: 1.0.0` opts out, by never moving at all.
+```
+
+and reports back, remark by remark, what changed:
+
+```text
+Two remarks, both answered in the prose and deleted:
+
+- "why the same consequence" — the passage now says it: a moved tag and an evaluated range
+  both end in taking a release nobody looked at, and the sentence names the one case that
+  opts out.
+- "is that still true" — it was not. Verification recomputes the content digest from the
+  pulled directory (Workspace.verifySigner), so the sentence was rewritten around the
+  content rather than the manifest.
+```
+
+The second one is the reason the convention earns its keep: the remark was a doubt about a
+sentence's accuracy, the answer came from reading the code, and the correction landed in the text
+rather than in a chat message nobody will find again.
+
+Before merging, the guard runs:
+
+```console
+$ ./scripts/check-review-markers.sh
+Unaddressed review annotations:
+  ./doc/making-of/09-verifying-the-signer.md:142:> @claude is that still true now that we sign the content?
+
+Answer each one in the prose and delete the annotation.
+```
+
+```console
+$ ./scripts/check-review-markers.sh
+No review annotations left.
+```
+
 ## Variations
 
 - **Per-author journal**: in a shared repo, name the file `making-of-<author>.md` so each contributor keeps their own voice.

@@ -56,4 +56,30 @@ Blog style: narrative prose meant to be read, section titles as hooks not labels
 
 When the file no longer reads in one sitting and a milestone boundary exists, split into `doc/making-of/NN-slug.md` posts ([templates/making-of-post.md](templates/making-of-post.md)) and turn the root file into an index.
 
+## Review annotations
+
+The author reviews a draft by writing in it. A remark is a blockquote starting with `@claude`, left
+**next to the sentence it is about** — a note two paragraphs away has lost half its meaning by the
+time anyone acts on it:
+
+```markdown
+> @claude this asserts the caret notation without saying where it comes from
+```
+
+Answer each one **in the prose**, then **delete the annotation**, and say in your reply what changed.
+An annotation is a question or an objection about the text, never an instruction to add a note beside
+it — if the answer is worth having, it is worth being part of the entry. When the answer is a fact
+you do not have, find it and quote the source rather than writing around the question.
+
+Nothing carrying the marker may be merged, because a forgotten remark reads like content to everyone
+who was not in the conversation. Copy [templates/check-review-markers.sh](templates/check-review-markers.sh)
+into the repository and run it in CI:
+
+```yaml
+- run: ./scripts/check-review-markers.sh
+```
+
+It ignores markers shown inside fenced code blocks, so the file documenting the convention passes on
+its own.
+
 Full instructions: [prompt.md](prompt.md). Worked example with the proof pattern: [examples/example-usage.md](examples/example-usage.md).
