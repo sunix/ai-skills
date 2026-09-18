@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.0](https://github.com/sunix/ai-skills/compare/making-of-v1.4.0...making-of-v1.5.0) (2026-09-18)
+
+
+### Features
+
+* **making-of:** one commit per point, and open each section with the files to look at ([#41](https://github.com/sunix/ai-skills/issues/41)) ([897e3f9](https://github.com/sunix/ai-skills/commit/897e3f9e3d0170426b78605d6d388052b3107b78))
+* **making-of:** review remarks written into the draft, and a guard so none ship ([#44](https://github.com/sunix/ai-skills/issues/44)) ([23f2eae](https://github.com/sunix/ai-skills/commit/23f2eae0b894f1cbc5232b08f1e049a75845e4f3))
+
 ## [1.4.0](https://github.com/sunix/ai-skills/compare/making-of-v1.3.0...making-of-v1.4.0) (2026-09-02)
 
 
