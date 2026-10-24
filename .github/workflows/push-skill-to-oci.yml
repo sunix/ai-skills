@@ -25,6 +25,9 @@ on:
 permissions:
   contents: read
   packages: write
+  # Lets the runner mint the OIDC token sigstore signs with. Without it the two variables
+  # sigstore-java looks for are simply absent and `diderot push --sign` has no identity to use.
+  id-token: write
 
 jobs:
   publish:
@@ -79,7 +82,11 @@ jobs:
             repo="ghcr.io/$owner/skills/$name"
 
             echo "==> $dir -> $repo:$version (and :latest)"
-            diderot push "$dir" "$repo:$version"
-            diderot push "$dir" "$repo:latest"
+            # --sign signs the skill's content digest with the workflow's own identity and carries
+            # the sigstore bundle in the artifact, so a consumer pinning this workflow in
+            # diderot.yaml can verify it. The same bundle covers both tags: it attests the content,
+            # not the manifest.
+            diderot push --sign "$dir" "$repo:$version"
+            diderot push --sign "$dir" "$repo:latest"
             echo "| \`$name\` | \`$version\` |" >> "$GITHUB_STEP_SUMMARY"
           done
